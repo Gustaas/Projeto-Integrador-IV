@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="Css/main.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+        <title>Site</title>
+    </head>
+
+    <body>
+        <div class="cabecalho">
+            <div class="item-cabecalho-1"><a th:href=@{/cadconsulta}>Med Life</a></div>
+        </div>
+
+        <div class="parte1">
+            <div class="conteudo primeiro-conteudo">
+                <div class="primeira-coluna">
+                    <h2 class="title title-primary">bem vindo!</h2>
+                    <p class="descricao descricao-primary">Mantenha se conectado</p>
+                    <p class="descricao descricao-primary">Faça seu Login</p>
+                    <button id="signin" class="btn btn-primary">Login</button>
+                </div>
+                <div class="segunda-coluna">
+                    <h2 class="title title-second">Crie sua conta</h2>            
+                <p class="descricao descricao-second"> informe seus dados para se cadastrar:</p>
+                <form class="formulario" action="/cadastro" method="post">
+                    <input name="nome" type="text" placeholder="NOME:" required>
+                    <input name="sobrenome" type="text" placeholder="SOBRENOME:" required>
+                    <input name="cpf" type="text" placeholder="CPF: xxx.xxx.xxx-xx" 
+                        pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" 
+                        title="Digite um CPF no formato: xxx.xxx.xxx-xx" required>
+                    <input name="email" type="email" placeholder="EMAIL:" required>
+                    <input name="senha" type="password" placeholder="SENHA:" required>
+                    <button class="btn" type="submit" value="Verificar">Cadastrar</button>
+                </form>
+               </div>
+             </div>
+             <div class="conteudo segundo-conteudo">
+                <div class="primeira-coluna">
+                    <h2 class="title title-primary">Ola!</h2>
+                    <p class="descricao descricao-primary">Entre com seus dados</p>
+                    <p class="descricao descricao-primary">Faça seu cadastro</p>
+                
+                    <button id="signup" class="btn btn-primary">Cadastrar-se</button>
+                   
+                   </div>
+                <div class="segunda-coluna">
+                <h2 class="title title-second">Faça Login</h2>
+                <p class="descricao descricao-second"> Entre com seu email:</p>
+                    <form class="formulario" action="/login" method="post">
+                    <input name="email" type="email" placeholder="Email:" required>
+                    <input name="senha" type="password" placeholder="Senha:" required>
+                <button type="submit" class="btn btn-second">Entrar</button>
+                
+            </form>
+                </div>
+                </div>
+        </div>
+
+        <script type="text/javascript" th:src="@{/js/app.js}">
+            var btnSignin = document.querySelector("#signin");
+            var btnSignup = document.querySelector("#signup");
+
+            var body = document.querySelector("body");
+
+
+            btnSignin.addEventListener("click", function () {
+            body.className = "sign-in-js"; 
+            });
+
+            btnSignup.addEventListener("click", function () {
+                body.className = "sign-up-js";
+            });
+        </script>
+    </body>
+
+</html>
