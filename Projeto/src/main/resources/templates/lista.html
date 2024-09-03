@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuários</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="listing-container">
+        <div class="listing-content">
+            <h1>Lista de Usuários</h1>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Pesquisar usuário...">
+                <button onclick="searchUser()">Procurar</button>
+            </div>
+            <table class="user-table" id="userTable">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Alterar</th>
+                        <th>Habilitar/Desabilitar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Exemplo de linha de tabela -->
+                    <tr>
+                        <td>João Silva</td>
+                        <td>joao.silva@example.com</td>
+                        <td>Ativo</td>
+                        <td><button class="btn-edit">Alterar</button></td>
+                        <td><button class="btn-toggle disable-button">Desabilitar</button></td>
+                    </tr>
+                    <tr>
+                        <td>Maria Oliveira</td>
+                        <td>maria.oliveira@example.com</td>
+                        <td>Inativo</td>
+                        <td><button class="btn-edit">Alterar</button></td>
+                        <td><button class="btn-toggle enable-button">Habilitar</button></td>
+                    </tr>
+                    <!-- Mais linhas podem ser adicionadas aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function searchUser() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const table = document.getElementById('userTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].innerText.toLowerCase().includes(input)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
