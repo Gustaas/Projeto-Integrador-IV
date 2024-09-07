@@ -17,16 +17,16 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 300px;
     text-align: center;
-    margin: auto; /* Centraliza o contêiner horizontalmente */
     display: flex;
     flex-direction: column;
+    
 }
+
 
 /* Estilo para o título da tela de login */
 .login-container h1 {
     margin-bottom: 20px;
 }
-
 /* Estilo para o formulário */
 form {
     display: flex;

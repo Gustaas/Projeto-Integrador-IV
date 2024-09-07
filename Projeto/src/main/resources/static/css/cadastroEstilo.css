@@ -1,0 +1,32 @@
+.content{
+    display: flex;
+    margin: auto;
+    
+    }
+    
+    .cadastro-container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        margin-left: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cadastro-container input {
+        margin-bottom: 10px;
+        padding: 13px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 10px;
+    }
+    .cadastro-container input::placeholder{
+        font-size: 14px;
+        text-align: left;
+        
+    }
+
+   

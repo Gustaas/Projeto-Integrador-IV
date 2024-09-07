@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Usuários</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div class="listing-container">
         <div class="listing-content">
@@ -57,7 +55,7 @@
             for (let i = 0; i < rows.length; i++) {
                 let cells = rows[i].getElementsByTagName('td');
                 let found = false;
-
+                
                 for (let j = 0; j < cells.length; j++) {
                     if (cells[j].innerText.toLowerCase().includes(input)) {
                         found = true;
@@ -74,5 +72,4 @@
         }
     </script>
 </body>
-
 </html>
