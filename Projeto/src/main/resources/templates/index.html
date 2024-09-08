@@ -13,20 +13,19 @@
     <section class="content">
         <div class="login-container">
             <h1>Login De Usuário</h1>
-            <form action="#">
-                <label for="email">Email:</label>
-                <input placeholder="Email" type="email" id="email" name="email" required>
-                <label for="password">Senha:</label>
-                <input placeholder="Senha " type="password" id="password" name="password" required>
+            <form action="/loginUser" method="post">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="senha" placeholder="Senha" required>
                 <div class="button-group">
-                    <button type="submit">OK</button>
+                    <button type="submit">Login</button>
                 </div>
+                <div th:if="${error}" th:text="${error}" style="color:red;"></div>
             </form>
         </div>
 
         <div class="cadastro-container">
             <h1>Cadastro De Usuário</h1>
-            <form action="/cadastrar" method="post">
+            <form id="cadastro" action="/cadastrar" method="post">
                 <label for="nome">Nome:</label>
                 <input type="text" id="nome" name="nome" required>
                 <br><br>
@@ -43,9 +42,10 @@
                     <button type="submit">Confirmar</button>
                 </div>
             </form>
+        </div>
     </section>
     <script src="https://kit.fontawesome.com/c2a60e25f3.js" crossorigin="anonymous"></script>
-    <script th:src="@{/js/ValidaCpf.js}"></script>
+    <script src="../js/ValidaCpf.js"></script>
 </body>
 
 </html>

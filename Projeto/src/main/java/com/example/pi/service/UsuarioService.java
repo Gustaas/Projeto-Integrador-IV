@@ -1,5 +1,7 @@
 package com.example.pi.service;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,5 +24,16 @@ public class UsuarioService {
         usuario.setSenha(encoder);
         Usuario novoUsuario = repository.save(usuario);
         return novoUsuario;
+    }
+
+    public Usuario login(String email, String senha) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            if (senhacript.matches(senha, usuario.getSenha())) {
+                return usuario;
+            }
+        }
+        return null;
     }
 }

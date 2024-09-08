@@ -1,6 +1,5 @@
 package com.example.pi.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,13 +16,42 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
-    @Autowired
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
     @GetMapping("/login")
     public String login() {
+        return "index";
+    }
+
+    @GetMapping("/principal")
+    public String principal() {
+        return "principal";
+    }
+
+    @GetMapping("/listaUser")
+    public String lista() {
+        return "lista";
+    }
+
+    @PostMapping("/loginUser")
+    public String login(
+            @RequestParam("email") String email,
+            @RequestParam("senha") String senha,
+            Model model) {
+        
+        Usuario usuario = usuarioService.login(email, senha);
+        
+        if (usuario != null) {
+            if (usuario.getTipo() == 1) {
+                return "redirect:/";
+            } else if (usuario.getTipo() == 2) {
+                return "redirect:/principal";
+            }
+        }
+
+        model.addAttribute("error", "Usuário ou senha inválidos");
         return "index";
     }
 
@@ -44,4 +72,6 @@ public class UsuarioController {
 
         return "redirect:/";
     }
+
+
 }

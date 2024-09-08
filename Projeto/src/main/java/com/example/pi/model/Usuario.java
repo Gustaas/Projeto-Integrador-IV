@@ -13,13 +13,12 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nome;
     private String cpf;
     private String email;
     private String senha;
     private Integer tipo = 1;
-    private Boolean ativo = true; 
+    private Boolean ativo = true;
 
     // Getters e Setters
     public Long getId() {

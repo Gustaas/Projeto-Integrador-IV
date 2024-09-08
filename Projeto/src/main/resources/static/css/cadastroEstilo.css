@@ -21,12 +21,9 @@
         padding: 13px;
         border: 1px solid #ddd;
         border-radius: 4px;
-        font-size: 10px;
     }
     .cadastro-container input::placeholder{
-        font-size: 14px;
         text-align: left;
-        
     }
 
    
