@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuários</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .close {
+            color: #333;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .modal-content input[type="text"],
+        .modal-content input[type="email"],
+        .modal-content input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .modal-content button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .modal-content button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="listing-container">
+        <div class="listing-content">
+            <h1>Lista de Usuários</h1>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Pesquisar usuário...">
+                <button onclick="fetchUsuarios()">Procurar</button>
+            </div>
+            <div id="userTableContainer">
+                <table class="user-table" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Tipo</th>
+                            <th>Alterar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaUsuarios">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Alterar Usuário</h2>
+            <form id="updateForm">
+                <input type="hidden" id="userId">
+                <label for="nome">Nome:</label>
+                <input type="text" id="userNome" name="nome" required>
+                <br><br>
+                <label for="email">Email:</label>
+                <input type="email" id="userEmail" name="email" required>
+                <br><br>
+                <label for="ativo">Ativo:</label>
+                <input type="checkbox" id="userAtivo" name="ativo">
+                <br><br>
+                <label for="tipo">Tipo:</label>
+                <input type="number" id="userTipo" name="tipo" required>
+                <br><br>
+                <button type="button" onclick="updateUser()">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function fetchUsuarios() {
+            fetch('/buscarusuarios')
+                .then(response => response.json())
+                .then(data => populateTable(data))
+                .catch(error => console.error('Erro ao buscar usuários:', error));
+        }
+
+        function populateTable(users) {
+            const tableBody = document.getElementById('tabelaUsuarios');
+            tableBody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.nome}</td>
+                    <td>${user.email}</td>
+                    <td>${user.ativo ? 'Ativo' : 'Inativo'}</td>
+                    <td>${user.tipo}</td>
+                    <td><button onclick="openModal(${user.id})">Alterar</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function openModal(id) {
+            fetch(`/usuario/${id}`)
+                .then(response => response.json())
+                .then(user => {
+                    document.getElementById('userId').value = user.id;
+                    document.getElementById('userNome').value = user.nome;
+                    document.getElementById('userEmail').value = user.email;
+                    document.getElementById('userAtivo').checked = user.ativo;
+                    document.getElementById('userTipo').value = user.tipo;
+                    document.getElementById('myModal').style.display = 'block';
+                })
+                .catch(error => console.error('Erro ao carregar dados do usuário:', error));
+        }
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = 'none';
+        }
+
+        function updateUser() {
+            const id = document.getElementById('userId').value;
+            const nome = document.getElementById('userNome').value;
+            const email = document.getElementById('userEmail').value;
+            const ativo = document.getElementById('userAtivo').checked;
+            const tipo = document.getElementById('userTipo').value;
+
+            fetch(`/atualizarusuario`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${id}&nome=${nome}&email=${email}&ativo=${ativo}&tipo=${tipo}`
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na atualização do usuário');
+                    }
+                    return response.text();
+                })
+                .then(result => {
+                    console.log(result);
+                    closeModal();
+                    fetchUsuarios();
+                })
+                .catch(error => console.error('Erro ao atualizar usuário:', error));
+        }
+        document.addEventListener('DOMContentLoaded', fetchUsuarios);
+    </script>
+</body>
+
+</html>

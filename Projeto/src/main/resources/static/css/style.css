@@ -1,4 +1,3 @@
-/* Estilo geral para o corpo da página */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -9,7 +8,6 @@ body {
     height: 100vh;
 }
 
-/* Estilo para o contêiner de login */
 .login-container {
     background: #fff;
     padding: 20px;
@@ -19,27 +17,22 @@ body {
     text-align: center;
     display: flex;
     flex-direction: column;
-    
 }
 
-
-/* Estilo para o título da tela de login */
 .login-container h1 {
     margin-bottom: 20px;
 }
-/* Estilo para o formulário */
+
 form {
     display: flex;
     flex-direction: column;
 }
 
-/* Estilo para os rótulos */
 label {
     margin-bottom: 5px;
     font-weight: bold;
 }
 
-/* Estilo para os campos de entrada */
 input {
     margin-bottom: 15px;
     padding: 10px;
@@ -48,56 +41,49 @@ input {
     font-size: 16px;
 }
 
-/* Estilo para os botões na tela de login */
 .button-group {
     display: flex;
-    flex-direction: column; /* Alinha os botões verticalmente */
+    flex-direction: column;
 }
 
-/* Estilo específico para o botão "OK" */
 .button-group button[type="submit"] {
     background-color: #007bff;
     color: white;
-    padding: 15px 20px; /* Aumenta o tamanho do botão */
+    padding: 15px 20px;
     border: none;
     border-radius: 4px;
-    font-size: 18px; /* Aumenta o tamanho da fonte */
+    font-size: 18px;
     cursor: pointer;
-    margin-bottom: 10px; /* Espaço entre os botões */
+    margin-bottom: 10px;
 }
 
-/* Efeito hover para o botão de submit */
 .button-group button[type="submit"]:hover {
     background-color: #0056b3;
 }
 
-/* Estilo para o botão de cancelar */
 .button-group button[type="button"] {
     background-color: #6c757d;
     color: white;
-    padding: 15px 20px; /* Aumenta o tamanho do botão */
+    padding: 15px 20px;
     border: none;
     border-radius: 4px;
-    font-size: 18px; /* Aumenta o tamanho da fonte */
+    font-size: 18px;
     cursor: pointer;
 }
 
-/* Efeito hover para o botão de cancelar */
 .button-group button[type="button"]:hover {
     background-color: #5a6268;
 }
 
-/* Estilo para a lista de links */
 ul {
     padding: 0;
     list-style-type: none;
 }
 
 li {
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
 }
 
-/* Estilo específico para a lista de links */
 .links-container {
     display: flex;
     justify-content: center;
@@ -120,7 +106,6 @@ li {
     margin-bottom: 20px;
 }
 
-/* Estilo para os links */
 .links-content a {
     text-decoration: none;
     color: black;
@@ -135,108 +120,183 @@ li {
     text-decoration: underline;
 }
 
-/* Estilo para a tabela na tela de listagem */
 table {
     width: 100%;
-    border-collapse: collapse; /* Colapsa bordas */
+    border-collapse: collapse;
     margin-top: 20px;
 }
 
-/* Estilo para o cabeçalho da tabela */
 thead {
-    background-color: #007bff; /* Azul escuro para o cabeçalho */
+    background-color: #007bff;
 }
 
 thead th {
     color: white;
     padding: 12px;
-    border-bottom: 2px solid white; /* Linha horizontal abaixo do cabeçalho */
+    border-bottom: 2px solid white;
 }
 
-/* Estilo para o corpo da tabela */
 tbody tr {
-    border-bottom: 1px solid #ddd; /* Linha horizontal separando as linhas da tabela */
+    border-bottom: 1px solid #ddd;
 }
 
 tbody td {
     padding: 12px;
     text-align: left;
     background-color: #f9f9f9;
-    border-bottom: 1px solid #ddd; /* Linha horizontal separando as células */
+    border-bottom: 1px solid #ddd;
 }
 
-/* Linhas de divisão para cada célula */
 tbody td:not(:last-child) {
-    border-right: 1px solid #ddd; /* Linha vertical separando as células dentro da mesma linha */
+    border-right: 1px solid #ddd;
 }
 
 tbody tr:nth-child(even) {
-    background-color: #e9ecef; /* Azul claro para linhas pares */
+    background-color: #e9ecef;
 }
 
 tbody tr:hover {
-    background-color: #d0dbe1; /* Azul muito claro para o efeito hover */
+    background-color: #d0dbe1;
 }
 
-/* Estilo para os botões na tabela */
 .table-buttons {
     display: flex;
-    gap: 5px; /* Espaço entre os botões */
+    gap: 5px;
 }
 
 .table-buttons button {
-    background-color: #007bff; /* Azul para todos os botões */
+    background-color: #007bff;
     color: white;
-    border: 1px solid #007bff; /* Borda azul */
-    padding: 5px 10px; /* Ajusta o padding para o tamanho do texto */
+    border: 1px solid #007bff;
+    padding: 5px 10px;
     border-radius: 4px;
-    font-size: 14px; /* Ajusta o tamanho da fonte */
+    font-size: 14px;
 }
 
 .table-buttons button:hover {
-    background-color: #0056b3; /* Azul escuro no hover */
-    border: 1px solid #0056b3; /* Borda azul escuro no hover */
+    background-color: #0056b3;
+    border: 1px solid #0056b3;
 }
 
-/* Estilo para botões específicos */
 .table-buttons .disable-button {
-    background-color: #dc3545; /* Vermelho para o botão Desabilitar */
-    border: 1px solid #dc3545; /* Borda vermelha */
+    background-color: #dc3545;
+    border: 1px solid #dc3545;
 }
 
 .table-buttons .disable-button:hover {
-    background-color: #c82333; /* Vermelho escuro no hover */
-    border: 1px solid #c82333; /* Borda vermelha escura no hover */
+    background-color: #c82333;
+    border: 1px solid #c82333;
 }
 
 .table-buttons .enable-button {
-    background-color: #28a745; /* Verde para o botão Habilitar */
-    border: 1px solid #28a745; /* Borda verde */
+    background-color: #28a745;
+    border: 1px solid #28a745;
 }
 
 .table-buttons .enable-button:hover {
-    background-color: #218838; /* Verde escuro no hover */
-    border: 1px solid #218838; /* Borda verde escuro no hover */
+    background-color: #218838;
+    border: 1px solid #218838;
 }
 
 .table-buttons .edit-button {
-    background-color: #ffc107; /* Amarelo para o botão Alterar */
-    border: 1px solid #ffc107; /* Borda amarela */
+    background-color: #ffc107;
+    border: 1px solid #ffc107;
     color: black;
 }
 
 .table-buttons .edit-button:hover {
-    background-color: #e0a800; /* Amarelo escuro no hover */
-    border: 1px solid #e0a800; /* Borda amarela escura no hover */
+    background-color: #e0a800;
+    border: 1px solid #e0a800;
 }
 
-/* Estilo responsivo para a tabela */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.close {
+    color: #333;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="email"],
+.modal-content input[type="number"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.modal-content button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background-color: #45a049;
+}
+
 @media (max-width: 768px) {
-    .user-table, thead, tbody, th, td, tr {
+
+    .user-table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
         display: block;
     }
 
-    .user-table th, .user-table td {
+    .user-table th,
+    .user-table td {
         padding: 10px;
         text-align: right;
         position: relative;
@@ -262,25 +322,23 @@ tbody tr:hover {
         display: block;
     }
 }
-/* Estilo para o contêiner de pesquisa */
+
 .search-container {
-    margin-bottom: 3px; /* Espaço abaixo do contêiner */
+    margin-bottom: 3px;
     display: flex;
-    align-items: center; /* Alinha os itens verticalmente no centro */
+    align-items: center;
 }
 
-/* Estilo para o campo de pesquisa */
 .search-container input[type="text"] {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
-    margin-right: 10px; /* Espaço entre o campo de pesquisa e o botão */
-    flex: 1; /* Ocupa o máximo de espaço disponível */
-    box-sizing: border-box; /* Inclui o padding e a borda no tamanho total do elemento */
+    margin-right: 10px;
+    flex: 1;
+    box-sizing: border-box;
 }
 
-/* Estilo para o botão de pesquisa */
 .search-container button {
     background-color: #007bff;
     color: white;
@@ -289,7 +347,7 @@ tbody tr:hover {
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
-    box-sizing: border-box; /* Inclui o padding e a borda no tamanho total do elemento */
+    box-sizing: border-box;
 }
 
 .search-container button:hover {

@@ -76,4 +76,16 @@ public class Usuario {
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
     }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+            "id=" + id +
+            ", nome='" + nome + '\'' +
+            ", cpf='" + cpf + '\'' +
+            ", email='" + email + '\'' +
+            ", tipo=" + tipo +
+            ", ativo=" + ativo +
+            '}';
+    }
 }

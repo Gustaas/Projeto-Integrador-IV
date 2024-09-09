@@ -11,9 +11,11 @@
         <div class="links-content">
             <h1>Principal</h1>
             <ul>
-                <li><a href="listar-produto.html">Listar Produto</a></li>
-                <li><a th:href="@{/listaUser}">Listar Usuário</a></li>
-                <li><a href="listar-pedido.html" class="gray-link">Listar Pedido</a></li>
+                <li><a th:href="@{/listar-produto.html}">Listar Produto</a></li>
+                <li th:if="${tipoUsuario == 3}">
+                    <a th:href="@{/listaUser}">Listar Usuário</a>
+                </li>
+                <li><a th:href="@{/listar-pedido.html}" class="gray-link">Listar Pedido</a></li>
             </ul>
         </div>
     </div>
