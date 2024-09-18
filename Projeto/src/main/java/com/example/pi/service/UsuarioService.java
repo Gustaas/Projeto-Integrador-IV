@@ -23,17 +23,6 @@ public class UsuarioService {
         this.senhacript = new BCryptPasswordEncoder();
     }
 
-    public Usuario login(String email, String senha) {
-        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
-            if (senhacript.matches(senha, usuario.getSenha())) {
-                return usuario;
-            }
-        }
-        return null;
-    }
-
     public List<Usuario> buscarUsuarios(String searchTerm) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             return repository.findAll();
@@ -80,10 +69,13 @@ public class UsuarioService {
         return digito == (cpfLocal.charAt(10) - '0');
     }
 
+    public Usuario findByEmail(String email) {
+        Optional<Usuario> usuarioOpt = repository.findByEmail(email);
+        return usuarioOpt.orElse(null);
+    }
+
     public String salvarUsuario(Usuario usuario) {
         if (validarCPF(usuario.getCpf())) {
-            String senhaCodificada = this.senhacript.encode(usuario.getSenha());
-            usuario.setSenha(senhaCodificada);
             repository.save(usuario);
             return "Usuário cadastrado com sucesso";
         } else {
@@ -94,9 +86,5 @@ public class UsuarioService {
     public Usuario findById(Long id) {
         return repository.findById(id).orElse(null);
     }
-    
-    // Implementação do método save
-    public Usuario save(Usuario usuario) {
-        return repository.save(usuario);
-    }
+
 }
