@@ -23,28 +23,6 @@ public class UsuarioService {
         this.senhacript = new BCryptPasswordEncoder();
     }
 
-    public List<Usuario> listarTodos() {
-        return repository.findAll();
-    }
-
-    public Optional<Usuario> buscarPorId(Long id) {
-        return repository.findById(id);
-    }
-
-    public void atualizarUsuario(Long id, String nome, String email, Integer tipo) {
-        Usuario usuario = repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        usuario.setNome(nome);
-        usuario.setEmail(email);
-        usuario.setTipo(tipo);
-        repository.save(usuario);
-    }
-
-    public void alterarStatus(Long id, boolean ativo) {
-        Usuario usuario = repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        usuario.setAtivo(ativo);
-        repository.save(usuario);
-    }
-
     public List<Usuario> buscarUsuarios(String searchTerm) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             return repository.findAll();

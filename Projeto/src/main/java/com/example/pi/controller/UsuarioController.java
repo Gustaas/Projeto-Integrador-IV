@@ -38,7 +38,6 @@ public class UsuarioController {
         return "cadprod";
     }
 
-
     @GetMapping("/lista")
     public String dashboard(HttpSession session, Model model) {
         Integer tipoUsuario = (Integer) session.getAttribute("tipoUsuario");
@@ -66,12 +65,12 @@ public class UsuarioController {
 
         if (!usuarioService.validarCPF(cpf)) {
             model.addAttribute("erro", "CPF inválido.");
-            return "redirect:/listaUser";
+            return "buscarUsuarios";
         }
 
         if (!senha.equals(confirmSenha)) {
             model.addAttribute("erro", "As senhas não coincidem.");
-            return "redirect:/listaUser";
+            return "buscarUsuarios";
         }
 
         // Criptografar a senha com BCrypt
