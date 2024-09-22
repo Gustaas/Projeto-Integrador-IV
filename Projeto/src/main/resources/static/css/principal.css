@@ -1,0 +1,165 @@
+/* Estilo geral */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Header estilizado */
+header {
+    background-color: #007bff;
+    /* Azul padrão */
+    color: white;
+    width: 100%;
+    padding: 15px 0;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    z-index: 100;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: 2px;
+}
+
+.logout-button {
+    background-color: #E53935;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #d32f2f;
+}
+
+/* Links de listagem */
+.links-container {
+    margin-top: 120px;
+    /* Ajuste para evitar sobreposição com o header */
+}
+
+.links-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+}
+
+.links-content h1 {
+    margin-bottom: 20px;
+}
+
+/* Remover efeitos de hover para os links */
+.links-content a {
+    text-decoration: none;
+    color: #007bff;
+    /* Azul padrão */
+    font-size: 18px;
+    padding: 10px 20px;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    /* Aumentando o espaçamento entre os links */
+    display: inline-block;
+    /* Garante que a margem seja aplicada corretamente */
+}
+
+.links-content a:hover {
+    background-color: transparent;
+    color: #007bff;
+    border-color: #007bff;
+}
+
+/* Estilo específico para a classe gray-link */
+.links-content .gray-link {
+    color: #9E9E9E;
+    border-color: #9E9E9E;
+}
+
+.links-content .gray-link:hover {
+    background-color: transparent;
+    color: #9E9E9E;
+}
+
+/* Estilo dos botões */
+.table-buttons button {
+    background-color: #007bff;
+    /* Azul padrão */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.table-buttons button:hover {
+    background-color: #0056b3;
+}
+
+.table-buttons .disable-button {
+    background-color: #E53935;
+}
+
+.table-buttons .disable-button:hover {
+    background-color: #d32f2f;
+}
+
+.table-buttons .enable-button {
+    background-color: #43A047;
+}
+
+.table-buttons .enable-button:hover {
+    background-color: #388E3C;
+}
+
+.table-buttons .edit-button {
+    background-color: #FFC107;
+    color: black;
+}
+
+.table-buttons .edit-button:hover {
+    background-color: #FFA000;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+    }
+
+    .links-container {
+        padding: 10px;
+    }
+
+    .links-content {
+        width: 100%;
+        max-width: none;
+    }
+}

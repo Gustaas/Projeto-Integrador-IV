@@ -20,9 +20,8 @@ body {
 .header {
     background-color: #0056b3;
     color: white;
-    padding: 10px 0;
+    padding: 20px 0;
     text-align: center;
-    margin-bottom: 10px;
 }
 
 .header h1 {
@@ -36,18 +35,15 @@ body {
     padding: 8px 16px;
     color: #fff;
     background-color: #f44336;
-    /* Cor de fundo vermelho */
     text-decoration: none;
     border-radius: 5px;
     font-size: 16px;
     font-weight: bold;
     margin-left: 20px;
-    /* Espaço à esquerda do botão */
 }
 
 .logout-button:hover {
     background-color: #e53935;
-    /* Cor de fundo vermelho escuro ao passar o mouse */
 }
 
 /* Estilo da segunda barra superior */
@@ -93,7 +89,6 @@ body {
     border-radius: 5px 0 0 5px;
     outline: none;
     background-color: #e9ecef;
-    /* Cor de fundo do campo de pesquisa */
 }
 
 .search-button {
@@ -159,83 +154,4 @@ tr:nth-child(even) {
 /* Estilo da caixa de seleção */
 .status-checkbox {
     transform: scale(1.2);
-    /* Aumenta o tamanho da caixa de seleção */
-}
-
-/* Estilo do formulário de produto */
-/* Estilo do formulário de produto */
-.product-form {
-    max-width: 400px;
-    /* Largura máxima do formulário */
-    margin: 0;
-    /* Remove a margem automática */
-    padding: 25px;
-    /* Ajusta o padding interno */
-    background-color: #003772;
-    /* Cor de fundo verde */
-    border-radius: 8px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-    /* Permite ajustes de posição */
-    left: 190px;
-    /* Move o formulário 20px para a esquerda */
-}
-
-/* Estilo dos campos do formulário */
-.form-group input,
-.form-group textarea,
-.form-group select {
-    width: 100%;
-    /* Largura total dos campos */
-    padding: 8px;
-    /* Espaçamento interno */
-    font-size: 14px;
-    /* Tamanho da fonte */
-    border: 1px solid #ddd;
-    /* Borda dos campos */
-    border-radius: 5px;
-    box-sizing: border-box;
-    background-color: #f9f9f9;
-    /* Cor de fundo dos campos */
-}
-
-.form-group textarea {
-    resize: vertical;
-    /* Permite redimensionamento vertical */
-}
-
-.form-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.submit-button,
-.cancel-button {
-    display: inline-block;
-    padding: 8px 14px;
-    /* Ajusta o padding dos botões */
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 14px;
-    /* Tamanho da fonte dos botões */
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.submit-button {
-    background-color: #003772;
-}
-
-.submit-button:hover {
-    background-color: #003772;
-}
-
-.cancel-button {
-    background-color: #f44336;
-}
-
-.cancel-button:hover {
-    background-color: #e53935;
 }

@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Links de Listagem</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/principal.css}">
 </head>
+
 <body>
+    <header class="header">
+        <div class="container">
+            <h1>Cantinho do Vinho</h1>
+            <form action="/logout" method="get" style="display: inline;">
+                <button type="submit" class="logout-button">Sair</button>
+            </form>
+        </div>
+    </header>
     <div class="links-container">
         <div class="links-content">
             <h1>Principal</h1>
@@ -20,4 +30,5 @@
         </div>
     </div>
 </body>
+
 </html>

@@ -6,13 +6,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exemplo com Barras Superiores e Tabela</title>
     <link rel="stylesheet" th:href="@{/css/styles2.css}">
+    <style>
+        /* Estilos para o modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            display: flex;
+            flex-direction: row;
+            background-color: #ffffff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 60%;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+        }
+
+        /* Estilo para o botão visualizar */
+        .visualizar-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .visualizar-button:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 
 <body>
     <header class="header">
         <div class="container">
             <h1>Cantinho do Vinho</h1>
-            <a href="#" class="logout-button">Sair</a>
+            <form action="/logout" method="get" style="display: inline;">
+                <button type="submit" class="logout-button">Sair</button>
+            </form>
         </div>
     </header>
     <header class="secondary-header">
@@ -27,7 +92,6 @@
     </header>
     <main>
         <div class="content">
-
             <table>
                 <thead>
                     <tr>
@@ -35,77 +99,241 @@
                         <th>Nome</th>
                         <th>Quantidade</th>
                         <th>Valor</th>
+                        <th>Avaliação</th> <!-- Nova coluna -->
                         <th>Status</th>
-                        <th>Ativo</th> <!-- Nova coluna -->
+                        <th>Ativo</th>
                         <th>Opções</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>001</td>
-                        <td>Produto A</td>
-                        <td>10</td>
-                        <td>R$ 50,00</td>
-                        <td>Disponível</td>
-                        <td><input type="checkbox" class="status-checkbox"></td> <!-- Caixa de seleção -->
+                <tbody id="produtos-tbody">
+                    <tr th:each="produto : ${produtos}">
+                        <td th:text="${produto.id}"></td>
+                        <td th:text="${produto.nomeProduto}"></td>
+                        <td th:text="${produto.qtd}"></td>
+                        <td th:text="${#numbers.formatDecimal(produto.preco, 2, 2)}"></td>
+                        <td th:text="${produto.avaliacao}"></td> <!-- Nova coluna para avaliação -->
+                        <td th:text="${produto.ativo ? 'Disponível' : 'Indisponível'}"></td>
+                        <td><input type="checkbox" class="status-checkbox" th:checked="${produto.ativo}"></td>
                         <td>
-                            <a href="#" class="button">Alterar</a>
-                            <a href="#" class="button">Visualizar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>002</td>
-                        <td>Produto B</td>
-                        <td>5</td>
-                        <td>R$ 30,00</td>
-                        <td>Indisponível</td>
-                        <td><input type="checkbox" class="status-checkbox"></td> <!-- Caixa de seleção -->
-                        <td>
-                            <a href="#" class="button">Alterar</a>
-                            <a href="#" class="button">Visualizar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>003</td>
-                        <td>Produto C</td>
-                        <td>20</td>
-                        <td>R$ 75,00</td>
-                        <td>Disponível</td>
-                        <td><input type="checkbox" class="status-checkbox"></td> <!-- Caixa de seleção -->
-                        <td>
-                            <a href="#" class="button">Alterar</a>
-                            <a href="#" class="button">Visualizar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>004</td>
-                        <td>Produto D</td>
-                        <td>8</td>
-                        <td>R$ 45,00</td>
-                        <td>Disponível</td>
-                        <td><input type="checkbox" class="status-checkbox"></td> <!-- Caixa de seleção -->
-                        <td>
-                            <a href="#" class="button">Alterar</a>
-                            <a href="#" class="button">Visualizar</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>005</td>
-                        <td>Produto E</td>
-                        <td>12</td>
-                        <td>R$ 60,00</td>
-                        <td>Indisponível</td>
-                        <td><input type="checkbox" class="status-checkbox"></td> <!-- Caixa de seleção -->
-                        <td>
-                            <a href="#" class="button">Alterar</a>
-                            <a href="#" class="button">Visualizar</a>
+                            <button class="visualizar-button" data-id="${produto.id}">Visualizar</button>
+                            <button class="visualizar-button alterar-button" data-id="${produto.id}">Alterar</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        <!-- Modal de Visualização -->
+        <div id="produtoModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeModal">&times;</span>
+                <img id="modalImagem" alt="Imagem do Produto" style="width: 400px; height: 400px; object-fit: cover;" />
+                <div>
+                    <h2 id="modalNomeProduto"></h2>
+                    <p><strong>Descrição:</strong> <span id="modalDescricao"></span></p>
+                    <p><strong>Preço:</strong> R$ <span id="modalPreco"></span></p>
+                    <p><strong>Quantidade:</strong> <span id="modalQuantidade"></span></p>
+                    <p><strong>Avaliação:</strong> <span id="modalAvaliacao"></span></p>
+                    <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Alteração -->
+        <div id="alterarProdutoModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeAlterarModal">&times;</span>
+                <h2>Alterar Produto</h2>
+                <form id="alterarProdutoForm">
+                    <input type="hidden" id="alterarProdutoId"> <!-- ID oculto -->
+                    <label>Nome:</label>
+                    <input type="text" class="modal-input" id="alterarNomeProduto" required>
+                    <label>Descrição:</label>
+                    <textarea class="modal-input" id="alterarDescricaoProduto" required></textarea>
+                    <label>Preço:</label>
+                    <input type="number" class="modal-input" id="alterarPrecoProduto" required>
+                    <label>Quantidade:</label>
+                    <input type="number" class="modal-input" id="alterarQuantidadeProduto" required>
+                    <label>Avaliação:</label> <!-- Novo campo para avaliação -->
+                    <input type="number" class="modal-input" id="alterarAvaliacaoProduto" required>
+                    <label>Ativo:</label>
+                    <input type="checkbox" class="modal-input" id="alterarAtivoProduto">
+                    <label>Imagem (URL):</label>
+                    <input type="text" class="modal-input" id="alterarImagemProduto" required
+                        placeholder="Insira o link da imagem">
+                    <button type="submit" class="visualizar-button">Salvar</button>
+                </form>
+            </div>
+        </div>
+
     </main>
-    <script src="./../js/pi.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/produtos/listarProdutosJson')
+                .then(response => response.json())
+                .then(produtos => {
+                    const tbody = document.getElementById('produtos-tbody');
+                    tbody.innerHTML = '';
+
+                    produtos.forEach(produto => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                        <td>${produto.id}</td>
+                        <td>${produto.nomeProduto}</td>
+                        <td>${produto.qtd}</td>
+                        <td>${(produto.preco).toFixed(2).replace('.', ',')}</td>
+                        <td>${produto.avaliacao}</td> <!-- Exibindo a avaliação -->
+                        <td>${produto.ativo ? 'Disponível' : 'Indisponível'}</td>
+                        <td><input type="checkbox" class="status-checkbox" ${produto.ativo ? 'checked' : ''}></td>
+                        <td>
+                            <button class="visualizar-button" data-id="${produto.id}">Visualizar</button>
+                            <button class="visualizar-button alterar-button" data-id="${produto.id}">Alterar</button>
+                        </td>
+                    `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Adiciona eventos para os botões de visualizar
+                    document.querySelectorAll('.visualizar-button').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const produtoId = button.getAttribute('data-id');
+                            if (button.classList.contains('alterar-button')) {
+                                mostrarAlterarProdutoModal(produtos.find(p => p.id == produtoId));
+                            } else {
+                                mostrarProdutoModal(produtos.find(p => p.id == produtoId));
+                            }
+                        });
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        function atualizarTabelaProdutos() {
+            fetch('/produtos/listarProdutosJson')
+                .then(response => response.json())
+                .then(produtos => {
+                    const tbody = document.getElementById('produtos-tbody');
+                    tbody.innerHTML = '';
+
+                    produtos.forEach(produto => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                        <td>${produto.id}</td>
+                        <td>${produto.nomeProduto}</td>
+                        <td>${produto.qtd}</td>
+                        <td>${(produto.preco).toFixed(2).replace('.', ',')}</td>
+                        <td>${produto.avaliacao}</td> <!-- Exibindo a avaliação -->
+                        <td>${produto.ativo ? 'Disponível' : 'Indisponível'}</td>
+                        <td><input type="checkbox" class="status-checkbox" ${produto.ativo ? 'checked' : ''}></td>
+                        <td>
+                            <button class="visualizar-button" data-id="${produto.id}">Visualizar</button>
+                            <button class="visualizar-button alterar-button" data-id="${produto.id}">Alterar</button>
+                        </td>
+                    `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Adiciona eventos para os botões de visualizar
+                    document.querySelectorAll('.visualizar-button').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const produtoId = button.getAttribute('data-id');
+                            if (button.classList.contains('alterar-button')) {
+                                mostrarAlterarProdutoModal(produtos.find(p => p.id == produtoId));
+                            } else {
+                                mostrarProdutoModal(produtos.find(p => p.id == produtoId));
+                            }
+                        });
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function mostrarProdutoModal(produto) {
+            document.getElementById('modalNomeProduto').innerText = produto.nomeProduto;
+            document.getElementById('modalImagem').src = produto.imagem;
+            document.getElementById('modalDescricao').innerText = produto.desc;
+            document.getElementById('modalPreco').innerText = produto.preco.toFixed(2).replace('.', ',');
+            document.getElementById('modalQuantidade').innerText = produto.qtd;
+            document.getElementById('modalAvaliacao').innerText = produto.avaliacao; // Exibir avaliação
+            document.getElementById('modalStatus').innerText = produto.ativo ? 'Disponível' : 'Indisponível';
+
+            const modal = document.getElementById('produtoModal');
+            modal.style.display = "block";
+
+            document.getElementById('closeModal').onclick = function () {
+                modal.style.display = "none";
+            }
+
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        }
+
+
+        function mostrarAlterarProdutoModal(produto) {
+            document.getElementById('alterarProdutoId').value = produto.id;
+            document.getElementById('alterarNomeProduto').value = produto.nomeProduto;
+            document.getElementById('alterarDescricaoProduto').value = produto.desc || '';
+            document.getElementById('alterarPrecoProduto').value = produto.preco;
+            document.getElementById('alterarQuantidadeProduto').value = produto.qtd;
+            document.getElementById('alterarAvaliacaoProduto').value = produto.avaliacao;
+            document.getElementById('alterarAtivoProduto').checked = produto.ativo;
+            document.getElementById('alterarImagemProduto').value = produto.imagem;
+
+            const modal = document.getElementById('alterarProdutoModal');
+            modal.style.display = "block";
+
+            document.getElementById('closeAlterarModal').onclick = function () {
+                modal.style.display = "none";
+            };
+
+            // Adicionando o evento para o formulário de alteração
+            document.getElementById('alterarProdutoForm').onsubmit = function (event) {
+                event.preventDefault(); // Impede o envio padrão do formulário
+
+                const id = document.getElementById('alterarProdutoId').value;
+                const nome = document.getElementById('alterarNomeProduto').value;
+                const descricao = document.getElementById('alterarDescricaoProduto').value;
+                const preco = parseFloat(document.getElementById('alterarPrecoProduto').value);
+                const quantidade = parseInt(document.getElementById('alterarQuantidadeProduto').value);
+                const avaliacao = parseInt(document.getElementById('alterarAvaliacaoProduto').value);
+                const ativo = document.getElementById('alterarAtivoProduto').checked;
+                const imagem = document.getElementById('alterarImagemProduto').value;
+
+                const produtoAtualizado = {
+                    id: id,
+                    nomeProduto: nome,
+                    desc: descricao,
+                    preco: preco,
+                    qtd: quantidade,
+                    avaliacao: avaliacao,
+                    ativo: ativo,
+                    imagem: imagem
+                };
+
+                // Chamada da API para atualizar o produto
+                fetch('/produtos/alterarProduto', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(produtoAtualizado)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            modal.style.display = "none";
+                        } else {
+                            return response.text().then(text => { throw new Error(text); });
+                        }
+                        atualizarTabelaProdutos();
+                    })
+                    .catch(error => console.error('Erro:', error));
+            };
+        }
+    </script>
 </body>
 
 </html>

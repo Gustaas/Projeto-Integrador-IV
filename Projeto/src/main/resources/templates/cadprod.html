@@ -5,14 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastrar Produto</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/styles2.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/cadastroproduto.css}">
 </head>
 
 <body>
     <header class="header">
         <div class="container">
             <h1>Cantinho do Vinho</h1>
-            <a href="index.html" class="logout-button">Sair</a>
+            <form action="/logout" method="get" style="display: inline;">
+                <button type="submit" class="logout-button">Sair</button>
+            </form>
         </div>
     </header>
     <main>
@@ -47,7 +49,8 @@
                 </div>
                 <div class="form-group">
                     <label for="product-images">Adicionar Imagens do Produto:</label>
-                    <input type="file" id="product-images" name="product-images" multiple>
+                    <input type="file" id="product-images" name="product-images" multiple onchange="previewImages()">
+                    <div id="image-preview" class="image-preview"></div>
                 </div>
                 <div class="form-buttons">
                     <button type="submit" class="submit-button">Salvar</button>
@@ -56,6 +59,28 @@
             </form>
         </div>
     </main>
+
+    <script>
+        function previewImages() {
+            const preview = document.getElementById('image-preview');
+            const files = document.getElementById('product-images').files;
+
+            preview.innerHTML = ''; // Limpa o preview anterior
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    preview.appendChild(img);
+                }
+
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 
 </html>
