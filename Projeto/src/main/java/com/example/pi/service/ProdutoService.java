@@ -18,6 +18,12 @@ public class ProdutoService {
         return produtoRepository.findAll();
     }
 
+    public void salvarProduto(Produto produto) {
+        produtoRepository.save(produto);
+        System.out.println("Produto salvo: " + produto.getNomeProduto());       
+    }
+    
+
     public Produto alterarProduto(Long id, String nomeProduto, String descricao, Double preco, Integer qtd, Boolean ativo,
             String imagem, Integer avaliacao) {
         Produto produto = produtoRepository.findById(id)

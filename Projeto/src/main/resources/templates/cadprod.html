@@ -20,7 +20,7 @@
     <main>
         <div class="content">
             <h2>Cadastrar Novo Produto</h2>
-            <form class="product-form">
+            <form class="product-form" action="/produtos/cadastrar-produto" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="product-name">Nome do Produto:</label>
                     <input type="text" id="product-name" name="product-name" required>
@@ -49,12 +49,40 @@
                 </div>
                 <div class="form-group">
                     <label for="product-images">Adicionar Imagens do Produto:</label>
-                    <input type="file" id="product-images" name="product-images" multiple onchange="previewImages()">
+                    <input type="file" id="product-images" name="product-images" multiple accept="image/*" onchange="previewImages()">
                     <div id="image-preview" class="image-preview"></div>
                 </div>
                 <div class="form-buttons">
                     <button type="submit" class="submit-button">Salvar</button>
                     <a th:href="@{/lista-produto}" class="cancel-button">Cancelar</a>
+                </div>
+            </form>
+            
+                    
+                    <script>
+                        function previewImages() {
+                            const imagePreview = document.getElementById('image-preview');
+                            imagePreview.innerHTML = ''; // Limpa a prévia anterior
+                    
+                            const files = document.getElementById('product-images').files;
+                            for (let i = 0; i < files.length; i++) {
+                                const file = files[i];
+                                const reader = new FileReader();
+                                
+                                reader.onload = function(e) {
+                                    const img = document.createElement('img');
+                                    img.src = e.target.result;
+                                    img.alt = 'Preview';
+                                    img.style.width = '100px'; // Ajuste o tamanho conforme necessário
+                                    img.style.margin = '5px'; // Espaçamento entre as imagens
+                                    imagePreview.appendChild(img);
+                                }
+                    
+                                reader.readAsDataURL(file);
+                            }
+                        }
+                    </script>
+                    
                 </div>
             </form>
         </div>
