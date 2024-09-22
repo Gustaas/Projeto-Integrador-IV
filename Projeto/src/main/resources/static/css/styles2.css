@@ -1,0 +1,241 @@
+/* Estilo global */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Container centralizado */
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Estilo da primeira barra superior */
+.header {
+    background-color: #0056b3;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+/* Estilo do botão "Sair" */
+.logout-button {
+    display: inline-block;
+    padding: 8px 16px;
+    color: #fff;
+    background-color: #f44336;
+    /* Cor de fundo vermelho */
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 20px;
+    /* Espaço à esquerda do botão */
+}
+
+.logout-button:hover {
+    background-color: #e53935;
+    /* Cor de fundo vermelho escuro ao passar o mouse */
+}
+
+/* Estilo da segunda barra superior */
+.secondary-header {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.secondary-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+/* Estilo do botão "+ Novo Produto" */
+.new-product-button {
+    display: inline-block;
+    padding: 8px 16px;
+    color: #fff;
+    background-color: #0056b3;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.new-product-button:hover {
+    background-color: #003772;
+}
+
+/* Estilo do contêiner de pesquisa */
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+    background-color: #e9ecef;
+    /* Cor de fundo do campo de pesquisa */
+}
+
+.search-button {
+    padding: 8px 12px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #0056b3;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #003772;
+}
+
+/* Estilo do conteúdo principal */
+main {
+    padding: 20px;
+}
+
+/* Estilo da tabela */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #003772;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.button {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 2px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #0056b3;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: #003772;
+}
+
+/* Estilo da caixa de seleção */
+.status-checkbox {
+    transform: scale(1.2);
+    /* Aumenta o tamanho da caixa de seleção */
+}
+
+/* Estilo do formulário de produto */
+/* Estilo do formulário de produto */
+.product-form {
+    max-width: 400px;
+    /* Largura máxima do formulário */
+    margin: 0;
+    /* Remove a margem automática */
+    padding: 25px;
+    /* Ajusta o padding interno */
+    background-color: #003772;
+    /* Cor de fundo verde */
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    /* Permite ajustes de posição */
+    left: 190px;
+    /* Move o formulário 20px para a esquerda */
+}
+
+/* Estilo dos campos do formulário */
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    /* Largura total dos campos */
+    padding: 8px;
+    /* Espaçamento interno */
+    font-size: 14px;
+    /* Tamanho da fonte */
+    border: 1px solid #ddd;
+    /* Borda dos campos */
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+    /* Cor de fundo dos campos */
+}
+
+.form-group textarea {
+    resize: vertical;
+    /* Permite redimensionamento vertical */
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.submit-button,
+.cancel-button {
+    display: inline-block;
+    padding: 8px 14px;
+    /* Ajusta o padding dos botões */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    /* Tamanho da fonte dos botões */
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.submit-button {
+    background-color: #003772;
+}
+
+.submit-button:hover {
+    background-color: #003772;
+}
+
+.cancel-button {
+    background-color: #f44336;
+}
+
+.cancel-button:hover {
+    background-color: #e53935;
+}

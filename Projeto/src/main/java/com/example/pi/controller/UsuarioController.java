@@ -28,6 +28,17 @@ public class UsuarioController {
         return "index";
     }
 
+    @GetMapping("/lista-produto")
+    public String listaProd() {
+        return "listaProduto";
+    }
+
+    @GetMapping("/cad-produto")
+    public String cadProd() {
+        return "cadprod";
+    }
+
+
     @GetMapping("/lista")
     public String dashboard(HttpSession session, Model model) {
         Integer tipoUsuario = (Integer) session.getAttribute("tipoUsuario");
@@ -44,28 +55,6 @@ public class UsuarioController {
         return "buscarUsuarios";
     }
 
-    @PostMapping("/loginUser")
-    public String login(
-            @RequestParam("email") String email,
-            @RequestParam("senha") String senha,
-            HttpSession session,
-            Model model) {
-
-        Usuario usuario = usuarioService.login(email, senha);
-
-        if (usuario != null) {
-            session.setAttribute("tipoUsuario", usuario.getTipo());
-
-            if (usuario.getTipo() == 1) {
-                return "redirect:/";
-            } else if (usuario.getTipo() == 2 || usuario.getTipo() == 3) {
-                return "redirect:/lista";
-            }
-        }
-        model.addAttribute("error", "Usuário ou senha inválidos");
-        return "index";
-    }
-
     @PostMapping("/cadastrar")
     public String cadastrarUsuario(
             @RequestParam("nome") String nome,
@@ -74,26 +63,61 @@ public class UsuarioController {
             @RequestParam("senha") String senha,
             @RequestParam("ConfirmPassword") String confirmSenha,
             Model model) {
+
         if (!usuarioService.validarCPF(cpf)) {
             model.addAttribute("erro", "CPF inválido.");
-            return "index";
+            return "redirect:/listaUser";
         }
 
         if (!senha.equals(confirmSenha)) {
             model.addAttribute("erro", "As senhas não coincidem.");
-            return "index";
+            return "redirect:/listaUser";
         }
 
+        // Criptografar a senha com BCrypt
         Usuario usuario = new Usuario();
         usuario.setNome(nome);
         usuario.setCpf(cpf);
         usuario.setEmail(email);
-        usuario.setSenha(new BCryptPasswordEncoder().encode(senha)); // Criptografa a senha
+        usuario.setSenha(new BCryptPasswordEncoder().encode(senha));
 
         String mensagem = usuarioService.salvarUsuario(usuario);
         model.addAttribute("mensagem", mensagem);
 
-        return "redirect:/";
+        return "redirect:/listaUser";
+    }
+
+    @PostMapping("/loginUser")
+    public String loginUser(
+            @RequestParam("email") String email,
+            @RequestParam("senha") String senha,
+            Model model,
+            HttpSession session) {
+
+        Usuario usuario = usuarioService.findByEmail(email);
+
+        if (usuario != null) {
+            System.out.println("Usuário encontrado: " + usuario.getEmail());
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            if (passwordEncoder.matches(senha, usuario.getSenha())) {
+                System.out.println("Senha correta para o usuário: " + usuario.getEmail());
+                session.setAttribute("tipoUsuario", usuario.getTipo());
+                if (usuario.getTipo() == 1) {
+                    return "redirect:/lista";
+                } else if (usuario.getTipo() == 2) {
+                    return "redirect:/lista";
+                }
+            } else {
+                System.out.println("Senha incorreta para o usuário: " + usuario.getEmail());
+                model.addAttribute("error", "Senha incorreta.");
+                return "index";
+            }
+        } else {
+            System.out.println("Usuário não encontrado com o e-mail: " + email);
+        }
+
+        model.addAttribute("error", "Usuário não encontrado.");
+        return "index";
     }
 
     @GetMapping("/buscarusuarios")
@@ -106,7 +130,7 @@ public class UsuarioController {
     @ResponseBody
     public Usuario getUserById(@PathVariable Long id) {
         Usuario usuario = usuarioService.findById(id);
-        return usuario != null ? usuario : new Usuario(); // Retorna um novo usuário se não encontrar
+        return usuario != null ? usuario : new Usuario();
     }
 
     @PostMapping("/atualizarusuario")
@@ -114,21 +138,19 @@ public class UsuarioController {
             @RequestParam("id") Long id,
             @RequestParam("nome") String nome,
             @RequestParam("email") String email,
-            @RequestParam("ativo") boolean ativo,
             @RequestParam("tipo") int tipo,
             Model model) {
 
-        Usuario usuario = usuarioService.findById(id); // Encontre o usuário por ID
+        Usuario usuario = usuarioService.findById(id);
         if (usuario != null) {
             usuario.setNome(nome);
             usuario.setEmail(email);
-            usuario.setAtivo(ativo);
             usuario.setTipo(tipo);
             usuarioService.salvarUsuario(usuario);
-            return "redirect:/lista"; // Redireciona para a lista de usuários após a atualização
+            return "redirect:/lista";
         }
 
         model.addAttribute("erro", "Usuário não encontrado");
-        return "redirect:/lista?erro=Usuário não encontrado"; // Redireciona para a lista com uma mensagem de erro
+        return "redirect:/lista?erro=Usuário não encontrado";
     }
 }

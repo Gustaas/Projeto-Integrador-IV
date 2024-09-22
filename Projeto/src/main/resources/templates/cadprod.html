@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Produto</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles2.css}">
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>Cantinho do Vinho</h1>
+            <a href="index.html" class="logout-button">Sair</a>
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Cadastrar Novo Produto</h2>
+            <form class="product-form">
+                <div class="form-group">
+                    <label for="product-name">Nome do Produto:</label>
+                    <input type="text" id="product-name" name="product-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Preço:</label>
+                    <input type="number" id="product-price" name="product-price" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-stock">Em Estoque:</label>
+                    <input type="number" id="product-stock" name="product-stock" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-description">Descrição Detalhada:</label>
+                    <textarea id="product-description" name="product-description" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="product-rating">Avaliação:</label>
+                    <select id="product-rating" name="product-rating" required>
+                        <option value="1">1 Estrela</option>
+                        <option value="2">2 Estrelas</option>
+                        <option value="3">3 Estrelas</option>
+                        <option value="4">4 Estrelas</option>
+                        <option value="5">5 Estrelas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-images">Adicionar Imagens do Produto:</label>
+                    <input type="file" id="product-images" name="product-images" multiple>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="submit-button">Salvar</button>
+                    <a th:href="@{/lista-produto}" class="cancel-button">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+
+</html>
