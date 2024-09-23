@@ -17,11 +17,6 @@ public class ProdutoService {
     public List<Produto> listarProdutos() {
         return produtoRepository.findAll();
     }
-
-    public void salvarProduto(Produto produto) {
-        produtoRepository.save(produto);
-        System.out.println("Produto salvo: " + produto.getNomeProduto());       
-    }
     
 
     public Produto alterarProduto(Long id, String nomeProduto, String descricao, Double preco, Integer qtd, Boolean ativo,

@@ -18,6 +18,7 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.7);
+            transition: opacity 0.3s ease-in-out;
         }
 
         .modal-content {
@@ -27,9 +28,40 @@
             margin: 5% auto;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             width: 60%;
+            max-width: 800px;
             position: relative;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .modal-content2 {
+            background-color: #ffffff;
+            /* Fundo branco para o conteúdo */
+            margin: 5% auto;
+            /* Centraliza o modal */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            /* Sombra para profundidade */
+            width: 80%;
+            max-width: 500px;
+            /* Largura máxima do modal */
+            position: relative;
+            animation: fadeIn 0.3s;
+            /* Animação de entrada */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .close {
@@ -40,6 +72,7 @@
             position: absolute;
             top: 10px;
             right: 10px;
+            transition: color 0.3s;
         }
 
         .close:hover,
@@ -49,24 +82,77 @@
         }
 
         .modal-input {
-            width: 100%;
-            padding: 8px;
+            width: 95%;
+            padding: 12px;
             margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s ease;
         }
 
-        /* Estilo para o botão visualizar */
+        .modal-input:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+
+        .modal img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+
+        /* Estilo para o botão de salvar */
         .visualizar-button {
-            background-color: #28a745;
+            background-color: #0056b3;
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 10px 16px;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
             transition: background-color 0.3s;
+            margin-top: 10px;
         }
 
         .visualizar-button:hover {
-            background-color: #218838;
+            background-color: #00448d;
+        }
+
+        .modal-content h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            font-size: 16px;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        /* Estilos para os inputs dentro do modal de alteração */
+        #alterarProdutoForm label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        #alterarProdutoForm button {
+            margin-top: 20px;
+            background-color: #0056b3;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #alterarProdutoForm button:hover {
+            background-color: #00448d;
         }
     </style>
 </head>
@@ -141,7 +227,7 @@
 
         <!-- Modal de Alteração -->
         <div id="alterarProdutoModal" class="modal">
-            <div class="modal-content">
+            <div class="modal-content2">
                 <span class="close" id="closeAlterarModal">&times;</span>
                 <h2>Alterar Produto</h2>
                 <form id="alterarProdutoForm">
