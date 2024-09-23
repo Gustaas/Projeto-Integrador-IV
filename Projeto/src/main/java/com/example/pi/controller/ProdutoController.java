@@ -3,7 +3,6 @@ package com.example.pi.controller;
 import com.example.pi.model.Produto;
 import com.example.pi.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -52,4 +51,9 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoAlterado);
     }
 
+    @PostMapping("/cadastrar")
+    public ResponseEntity<Produto> cadastrarProduto(@RequestBody Produto produto) {
+        Produto produtoSalvo = produtoService.salvarProduto(produto);
+        return ResponseEntity.ok(produtoSalvo);
+    }
 }

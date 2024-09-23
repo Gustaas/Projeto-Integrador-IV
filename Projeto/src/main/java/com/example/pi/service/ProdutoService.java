@@ -32,4 +32,8 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
+    public Produto salvarProduto(Produto produto) {
+        return produtoRepository.save(produto);
+    }
+
 }
