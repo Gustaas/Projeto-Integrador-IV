@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,6 +35,27 @@ public class ProdutoController {
     public List<Produto> listarProdutosJson() {
         return produtoService.listarProdutos();
     }
+
+    @PostMapping("/cadastrar-produto")
+public String cadastrarProduto(
+        @RequestParam("product-name") String nome,
+        @RequestParam("product-price") double preco,
+        @RequestParam("product-stock") int estoque,
+        @RequestParam("product-description") String descricao,
+        @RequestParam("product-rating") int avaliacao,
+        @RequestParam("product-images") MultipartFile[] imagens,
+        Model model) {
+
+    Produto novoProduto = new Produto();
+    novoProduto.setNomeProduto(nome);
+    novoProduto.setPreco(preco);
+    novoProduto.setQtd(estoque);
+    novoProduto.setDesc(descricao);
+    novoProduto.setAvaliacao(avaliacao);
+    
+    return "redirect:/produtos/listar"; }
+
+
 
     @PostMapping("/alterarProduto")
     @ResponseBody

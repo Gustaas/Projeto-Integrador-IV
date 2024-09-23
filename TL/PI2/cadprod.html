@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Produto</title>
+    <link rel="stylesheet" href="cadastrar.css">
+    <style>
+        /* Estilo para a visualização de imagem (opcional) */
+        .image-preview {
+            margin-top: 10px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header class="header-cadastrar">
+        <div class="container-cadastrar">
+            <h1>Cantinho do Vinho</h1>
+            <a href="index.html" class="logout-button-cadastrar">Sair</a>
+        </div>
+    </header>
+    <main>
+        <div class="content-cadastrar">
+            <!-- Formulário existente -->
+            <form class="form-container">
+                <h2>Cadastrar Novo Produto</h2>
+                <div class="form-group">
+                    <label for="product-name">Nome do Produto:</label>
+                    <input type="text" id="product-name" name="product-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Preço:</label>
+                    <input type="number" id="product-price" name="product-price" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-stock">Em Estoque:</label>
+                    <input type="number" id="product-stock" name="product-stock" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-description">Descrição Detalhada:</label>
+                    <textarea id="product-description" name="product-description" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="product-rating">Avaliação:</label>
+                    <select id="product-rating" name="product-rating" required>
+                        <option value="1">1 Estrela</option>
+                        <option value="2">2 Estrelas</option>
+                        <option value="3">3 Estrelas</option>
+                        <option value="4">4 Estrelas</option>
+                        <option value="5">5 Estrelas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-images">Adicionar Imagens do Produto:</label>
+                    <input type="file" id="product-images" name="product-images" multiple accept="image/*">
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="submit-button">Salvar</button>
+                    <a href="index.html" class="cancel-button">Cancelar</a>
+                </div>
+            </form>
+
+            <!-- Novo formulário vazio à direita -->
+            <form class="form-container">
+                <div id="image-preview-container-right"></div> <!-- Container para visualização de imagem no formulário vazio -->
+            </form>
+        </div>
+    </main>
+
+    <script>
+    document.getElementById('product-images').addEventListener('change', function(event) {
+        const files = event.target.files;
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        const previewContainerRight = document.getElementById('image-preview-container-right');
+        previewContainerRight.innerHTML = ''; // Limpa a visualização anterior
+
+        for (let i = 0; i < files.length; i++) {
+            if (!allowedTypes.includes(files[i].type)) {
+                alert(`Arquivo "${files[i].name}" não é uma imagem válida. Por favor, selecione arquivos JPEG, PNG ou GIF.`);
+                event.target.value = ''; // Limpa o campo de arquivos se algum arquivo não for válido
+                return;
+            } else {
+                // Visualização da imagem
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('image-preview');
+                    previewContainerRight.appendChild(img);
+                };
+                reader.readAsDataURL(files[i]);
+            }
+        }
+    });
+    </script>
+</body>
+</html>
