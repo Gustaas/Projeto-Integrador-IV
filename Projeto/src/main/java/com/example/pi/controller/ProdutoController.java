@@ -89,15 +89,15 @@ public class ProdutoController {
     }
 
     @GetMapping("/listarProdutosJson")
-    public ResponseEntity<List<Produto>> listarProdutosJson() {
-        try {
-            List<Produto> produtos = produtoService.listarTodos();
-            return ResponseEntity.ok(produtos);
-        } catch (Exception e) {
-            // Log do erro
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    @ResponseBody
+    public List<Produto> listarProdutosJson() {
+        List<Produto> produtos = produtoService.listarTodos();
+        for (Produto produto : produtos) {
+            for (ImagemProduto imagem : produto.getImagens()) {
+                imagem.setProduto(null);
+            }
         }
+        return produtos;
     }
 
     @PostMapping("/alterarProduto")
@@ -139,7 +139,8 @@ public class ProdutoController {
             @RequestParam("qtd") Integer qtd,
             @RequestParam("avaliacao") Integer avaliacao,
             @RequestParam("ativo") Boolean ativo,
-            @RequestParam("imagens") List<MultipartFile> imagens) {
+            @RequestParam("imagens") List<MultipartFile> imagens,
+            @RequestParam(value = "imagemPrincipal", required = false) String imagemPrincipal) { // Mudança para String
 
         try {
             Produto produto = new Produto();
@@ -150,24 +151,26 @@ public class ProdutoController {
             produto.setAvaliacao(avaliacao);
             produto.setAtivo(ativo);
 
-            // Salvar o produto primeiro
-            produto = produtoRepository.save(produto);
-
-            // Agora que o produto foi salvo e tem um ID, associamos as imagens
             List<ImagemProduto> listaImagens = new ArrayList<>();
-            for (MultipartFile imagem : imagens) {
+            for (int i = 0; i < imagens.size(); i++) {
+                MultipartFile imagem = imagens.get(i);
                 String link = imagemService.salvarImagem(imagem);
                 ImagemProduto novaImagem = new ImagemProduto();
-                novaImagem.setProduto(produto); // Associando a imagem ao produto
-                novaImagem.setLink(link); // Definindo o link da imagem
+                novaImagem.setLink(link);
+                novaImagem.setProduto(produto);
+                // Verifica se a imagem atual é a principal
+                if (imagemPrincipal != null && imagemPrincipal.equals(imagem.getOriginalFilename())) {
+                    novaImagem.setPrincipal(true); // Define como principal
+                } else {
+                    novaImagem.setPrincipal(false); // Define como não principal
+                }
                 listaImagens.add(novaImagem);
             }
 
-            // Salvar as imagens no banco de dados, se houver um repositório para ImagemProduto
-            // Se necessário, você pode ter um repositório de imagem e salvá-las aqui
-            // imagemProdutoRepository.saveAll(listaImagens); // Descomente se houver repositório
-            produto.setImagens(listaImagens); // Se a associação for bidirecional
-            return ResponseEntity.status(HttpStatus.CREATED).body(produto);
+            produto.setImagens(listaImagens);
+            Produto produtoSalvo = produtoRepository.save(produto);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(produtoSalvo);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

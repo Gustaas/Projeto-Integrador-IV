@@ -183,19 +183,13 @@
             </table>
         </div>
 
-        <!-- Modal de Visualização -->
-        <div id="produtoModal" class="modal">
+        <div id="modal-visualizar" class="modal">
             <div class="modal-content">
-                <span class="close" id="closeModal">&times;</span>
-                <img id="modalImagem" alt="Imagem do Produto" />
-                <div>
-                    <h2 id="modalNomeProduto"></h2>
-                    <p><strong>Descrição:</strong> <span id="modalDescricao"></span></p>
-                    <p><strong>Preço:</strong> R$ <span id="modalPreco"></span></p>
-                    <p><strong>Quantidade:</strong> <span id="modalQuantidade"></span></p>
-                    <p><strong>Avaliação:</strong> <span id="modalAvaliacao"></span></p>
-                    <p><strong>Status:</strong> <span id="modalStatus"></span></p>
-                </div>
+                <span class="close" onclick="fecharModal('editar')">×</span>
+                <h2>Detalhes do Produto</h2>
+                <div id="detalhes-produto"></div> <!-- Elemento onde os detalhes serão inseridos -->
+                <h3>Imagens do Produto</h3>
+                <div id="imagens-produto"></div> <!-- Elemento onde as imagens serão inseridas -->
             </div>
         </div>
 
@@ -243,8 +237,13 @@
 
     <script>
         // Função para listar produtos
-        fetch('/produtos/produtos')
-            .then(response => response.json())
+        fetch('/produtos/listarProdutosJson')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar produtos');
+                }
+                return response.json();
+            })
             .then(data => {
                 const tbody = document.getElementById('produtos-tbody');
                 tbody.innerHTML = ''; // Limpa a tabela antes de adicionar novos produtos
@@ -258,40 +257,79 @@
                 <td>${produto.avaliacao ? produto.avaliacao : 'N/A'}</td>
                 <td>${produto.ativo ? 'Sim' : 'Não'}</td>
                 <td>
-                    <button onclick="abrirModal(${produto.id})">Visualizar</button>
+                     <button onclick="abrirModalVisualizar(${produto.id})">Visualizar</button>
                     <button onclick="abrirModalAlterar(${produto.id})">Alterar</button>
                     <button onclick="habilitarDesabilitarProduto(${produto.id}, ${produto.ativo})">
                         ${produto.ativo ? 'Desabilitar' : 'Habilitar'}
                     </button>
                 </td>
-
             `;
                     tbody.appendChild(tr);
                 });
+            })
+            .catch(error => {
+                alert(error.message);
             });
 
         // Função para abrir o modal de visualização
-        function abrirModal(id) {
+        function abrirModalVisualizar(id) {
             fetch(`/produtos/${id}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Erro ao buscar o produto');
+                        throw new Error('Erro ao carregar produto: ' + response.statusText);
                     }
                     return response.json();
                 })
                 .then(produto => {
-                    document.getElementById('modalNomeProduto').innerText = produto.nomeProduto;
-                    document.getElementById('modalDescricao').innerText = produto.desc;
-                    document.getElementById('modalPreco').innerText = produto.preco.toFixed(2);
-                    document.getElementById('modalQuantidade').innerText = produto.qtd;
-                    document.getElementById('modalAvaliacao').innerText = produto.avaliacao;
-                    document.getElementById('modalStatus').innerText = produto.ativo ? 'Ativo' : 'Inativo';
-                    document.getElementById('modalImagem').src = produto.imagem;
-                    document.getElementById('produtoModal').style.display = 'block';
+                    // Debug: verifique o objeto produto
+                    console.log('Produto carregado:', produto);
+
+                    const detalhes = `
+                <p><strong>ID:</strong> ${produto.id}</p>
+                <p><strong>Nome:</strong> ${produto.nomeProduto}</p>
+                <p><strong>Preço:</strong> R$ ${produto.preco.toFixed(2)}</p>
+                <p><strong>Quantidade:</strong> ${produto.qtd}</p>
+                <p><strong>Avaliação:</strong> ${produto.avaliacao}</p>
+                <p><strong>Ativo:</strong> ${produto.ativo ? 'Sim' : 'Não'}</p>
+            `;
+
+                    // Verifique se o elemento existe antes de definir o innerHTML
+                    const detalhesProduto = document.getElementById('detalhes-produto');
+                    if (detalhesProduto) {
+                        detalhesProduto.innerHTML = detalhes;
+                    } else {
+                        console.error("Elemento 'detalhes-produto' não encontrado");
+                    }
+
+                    const imagensContainer = document.getElementById('imagens-produto');
+                    imagensContainer.innerHTML = ''; // Limpa as imagens anteriores
+
+                    // Verifique se o produto tem imagens
+                    if (produto.imagens && produto.imagens.length > 0) {
+                        produto.imagens.forEach(imagem => {
+                            const img = document.createElement('img');
+                            img.src = imagem.link; // A URL da imagem
+                            img.alt = 'Imagem do produto';
+                            img.style.width = '100px'; // Ajuste o tamanho conforme necessário
+                            img.style.margin = '5px';
+                            imagensContainer.appendChild(img);
+                        });
+                    } else {
+                        imagensContainer.innerHTML = '<p>Nenhuma imagem disponível.</p>';
+                    }
+
+                    document.getElementById('modal-visualizar').style.display = 'block';
                 })
-                .catch(error => {
-                    alert(error.message);
-                });
+                .catch(error => console.error('Erro ao carregar produto:', error));
+        }
+
+        // Função para fechar o modal
+        function fecharModal(tipo) {
+            if (tipo === 'editar') {
+                document.getElementById('modal-editar').style.display = 'none';
+            } else if (tipo === 'visualizar') {
+                document.getElementById('modal-visualizar').style.display = 'none';
+            }
         }
 
         // Função para abrir o modal de alteração
@@ -346,6 +384,7 @@
             const ativo = document.getElementById('produto-ativo').checked;
 
             const produtoAtualizado = { id, nomeProduto: nome, preco, qtd: quantidade, avaliacao, ativo };
+            console.log('Produto Atualizado:', produtoAtualizado); // Adicione esta linha
 
             fetch(`/produtos/alterar/${id}`, {
                 method: 'PUT',
@@ -355,14 +394,19 @@
                 body: JSON.stringify(produtoAtualizado)
             })
                 .then(response => {
+                    console.log('Response:', response); // Adicione esta linha
                     if (response.ok) {
                         alert('Produto atualizado com sucesso!');
                         location.reload(); // Atualiza a tabela após a alteração
                     } else {
                         alert('Erro ao atualizar o produto.');
                     }
+                })
+                .catch(error => {
+                    console.error('Erro ao atualizar o produto:', error); // Adicione esta linha
                 });
         }
+
         function habilitarDesabilitarProduto(id, ativo) {
             const novoStatus = !ativo;
             fetch(`/produtos/alterar-status/${id}`, {

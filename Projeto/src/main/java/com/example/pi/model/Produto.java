@@ -1,6 +1,5 @@
 package com.example.pi.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -39,12 +38,8 @@ public class Produto {
     @Column(name = "ativo")
     private boolean ativo;
 
-    // Campo para armazenar o caminho da imagem principal
-    @Column(name = "imagemPrincipal")
-    private String imagemPrincipal;
-
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ImagemProduto> imagens = new ArrayList<>();
+    private List<ImagemProduto> imagens;
 
     // Getters e Setters
     public Long getId() {
@@ -101,14 +96,6 @@ public class Produto {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
-    }
-
-    public String getImagemPrincipal() {
-        return imagemPrincipal;
-    }
-
-    public void setImagemPrincipal(String imagemPrincipal) {
-        this.imagemPrincipal = imagemPrincipal;
     }
 
     public List<ImagemProduto> getImagens() {

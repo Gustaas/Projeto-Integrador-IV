@@ -20,9 +20,9 @@ public class ImagemProduto {
     @Column(name = "link", nullable = false)
     private String link;
 
-    @ManyToOne // Se a relação for muitos para um
-    @JoinColumn(name = "id_produto", nullable = false)
-    private Produto produto; // Referência ao produto
+    @ManyToOne
+    @JoinColumn(name = "id_produto")
+    private Produto produto;
 
     @Column(name = "principal")
     private Boolean principal;

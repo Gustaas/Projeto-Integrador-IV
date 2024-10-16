@@ -14,7 +14,7 @@
         <form id="product-form" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="product-name">Nome do Produto:</label>
-                <input type="text" id="product-name" name="nomeProduto" required> <!-- Corrigido para nomeProduto -->
+                <input type="text" id="product-name" name="nomeProduto" required>
             </div>
 
             <div class="form-group">
@@ -46,7 +46,6 @@
 
             <button type="submit">Cadastrar Produto</button>
         </form>
-
     </div>
 
     <script>
@@ -72,10 +71,10 @@
                     img.width = 100; // Ajuste o tamanho conforme necessário
 
                     const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
+                    checkbox.type = 'radio';
                     checkbox.id = 'principal-' + i;
-                    checkbox.name = 'principal';
-                    checkbox.value = file.name; // Valor pode ser ajustado conforme necessário
+                    checkbox.name = 'principal'; // Usar o mesmo nome para coletar a imagem principal
+                    checkbox.value = file.name; // Usar o nome do arquivo como valor
 
                     const label = document.createElement('label');
                     label.htmlFor = checkbox.id;
@@ -110,6 +109,11 @@
             const principalImage = Array.from(document.querySelectorAll('input[name="principal"]:checked'));
             if (principalImage.length > 0) {
                 formData.append('imagemPrincipal', principalImage[0].value);
+                // Marcar a imagem principal como true
+                formData.append('principal', true);
+            } else {
+                // Caso não tenha nenhuma imagem marcada, você pode enviar como false ou não enviar
+                formData.append('principal', false);
             }
 
             fetch('/produtos/cadastrar', {
@@ -121,7 +125,7 @@
                         alert('Produto cadastrado com sucesso!');
                         window.location.href = '/lista-produto';
                     } else {
-                        return response.text().then(text => { // Captura a resposta
+                        return response.text().then(text => {
                             alert(`Erro ao cadastrar o produto: ${text}`);
                         });
                     }
