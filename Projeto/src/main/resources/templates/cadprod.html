@@ -9,110 +9,121 @@
 </head>
 
 <body>
-    <header class="header">
-        <div class="container">
-            <h1>Cantinho do Vinho</h1>
-            <form action="/logout" method="get" style="display: inline;">
-                <button type="submit" class="logout-button">Sair</button>
-            </form>
-        </div>
-    </header>
-    <main>
-        <div class="content">
-            <h2>Cadastrar Novo Produto</h2>
-            <form id="product-form" class="product-form">
-                <div class="form-group">
-                    <label for="product-name">Nome do Produto:</label>
-                    <input type="text" id="product-name" name="product-name" required>
-                </div>
-                <div class="form-group">
-                    <label for="product-price">Preço:</label>
-                    <input type="number" id="product-price" name="product-price" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label for="product-stock">Em Estoque:</label>
-                    <input type="number" id="product-stock" name="product-stock" required>
-                </div>
-                <div class="form-group">
-                    <label for="product-description">Descrição Detalhada:</label>
-                    <textarea id="product-description" name="product-description" rows="4" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="product-rating">Avaliação:</label>
-                    <select id="product-rating" name="product-rating" required>
-                        <option value="1">1 Estrela</option>
-                        <option value="2">2 Estrelas</option>
-                        <option value="3">3 Estrelas</option>
-                        <option value="4">4 Estrelas</option>
-                        <option value="5">5 Estrelas</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="product-image-url">URL da Imagem:</label>
-                    <input type="text" id="product-image-url" name="product-image-url"
-                        placeholder="Insira o link da imagem" required>
-                    <div id="image-preview" class="image-preview"></div>
-                </div>
-                <div class="form-buttons">
-                    <button type="submit" class="submit-button">Salvar</button>
-                    <a href="/lista-produto" class="cancel-button">Cancelar</a>
-                </div>
-            </form>
-        </div>
-    </main>
+    <div class="container">
+        <h1>Cadastrar Produto</h1>
+        <form id="product-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="product-name">Nome do Produto:</label>
+                <input type="text" id="product-name" name="nomeProduto" required> <!-- Corrigido para nomeProduto -->
+            </div>
+
+            <div class="form-group">
+                <label for="product-price">Preço:</label>
+                <input type="number" id="product-price" name="preco" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="product-stock">Quantidade em Estoque:</label>
+                <input type="number" id="product-stock" name="qtd" required>
+            </div>
+
+            <div class="form-group">
+                <label for="product-description">Descrição:</label>
+                <textarea id="product-description" name="descricao" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="product-rating">Avaliação:</label>
+                <input type="number" id="product-rating" name="avaliacao" min="1" max="5" required>
+            </div>
+
+            <div class="form-group">
+                <label for="product-images">Imagens do Produto:</label>
+                <input type="file" id="product-images" name="imagens" accept="image/*" multiple required>
+            </div>
+
+            <div id="image-preview-container"></div>
+
+            <button type="submit">Cadastrar Produto</button>
+        </form>
+
+    </div>
 
     <script>
-        // Função para mostrar pré-visualização da imagem
-        document.getElementById('product-image-url').addEventListener('input', function () {
-            const imageUrl = document.getElementById('product-image-url').value;
-            const preview = document.getElementById('image-preview');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imageInput = document.getElementById('product-images');
 
-            preview.innerHTML = ''; // Limpa a pré-visualização anterior
+        imageInput.addEventListener('change', function () {
+            // Limpa as prévias de imagens
+            imagePreviewContainer.innerHTML = '';
 
-            if (imageUrl) {
-                const img = document.createElement('img');
-                img.src = imageUrl;
-                preview.appendChild(img);
+            const files = imageInput.files;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const imageDiv = document.createElement('div');
+                    imageDiv.classList.add('image-preview');
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = file.name;
+                    img.width = 100; // Ajuste o tamanho conforme necessário
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = 'principal-' + i;
+                    checkbox.name = 'principal';
+                    checkbox.value = file.name; // Valor pode ser ajustado conforme necessário
+
+                    const label = document.createElement('label');
+                    label.htmlFor = checkbox.id;
+                    label.innerText = 'Imagem Principal';
+
+                    imageDiv.appendChild(img);
+                    imageDiv.appendChild(checkbox);
+                    imageDiv.appendChild(label);
+                    imagePreviewContainer.appendChild(imageDiv);
+                };
+
+                reader.readAsDataURL(file);
             }
         });
 
-        // Função para enviar os dados do formulário via fetch
         document.getElementById('product-form').addEventListener('submit', function (event) {
-            event.preventDefault(); // Evita o comportamento padrão do formulário
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('nomeProduto', document.getElementById('product-name').value);
+            formData.append('preco', parseFloat(document.getElementById('product-price').value));
+            formData.append('qtd', parseInt(document.getElementById('product-stock').value));
+            formData.append('descricao', document.getElementById('product-description').value);
+            formData.append('avaliacao', parseInt(document.getElementById('product-rating').value));
+            formData.append('ativo', true);
 
-            // Captura os valores dos campos
-            const nomeProduto = document.getElementById('product-name').value;
-            const preco = document.getElementById('product-price').value;
-            const qtd = document.getElementById('product-stock').value;
-            const desc = document.getElementById('product-description').value;
-            const avaliacao = document.getElementById('product-rating').value;
-            const imagem = document.getElementById('product-image-url').value;
+            const images = document.getElementById('product-images').files;
+            for (let i = 0; i < images.length; i++) {
+                formData.append('imagens', images[i]);
+            }
 
-            // Criação do objeto de produto
-            const produto = {
-                nomeProduto: nomeProduto,
-                preco: parseFloat(preco),
-                qtd: parseInt(qtd),
-                desc: desc,
-                avaliacao: parseInt(avaliacao),
-                imagem: imagem,
-                ativo: true // Valor fixo, pode ajustar de acordo com sua necessidade
-            };
+            // Adiciona a informação da imagem principal
+            const principalImage = Array.from(document.querySelectorAll('input[name="principal"]:checked'));
+            if (principalImage.length > 0) {
+                formData.append('imagemPrincipal', principalImage[0].value);
+            }
 
-            // Envio da requisição POST para a API
             fetch('/produtos/cadastrar', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(produto), // Converte o objeto em JSON para o envio
+                body: formData,
             })
                 .then(response => {
                     if (response.ok) {
                         alert('Produto cadastrado com sucesso!');
-                        window.location.href = '/lista-produto'; // Redireciona para a lista de produtos
+                        window.location.href = '/lista-produto';
                     } else {
-                        alert('Erro ao cadastrar o produto.');
+                        return response.text().then(text => { // Captura a resposta
+                            alert(`Erro ao cadastrar o produto: ${text}`);
+                        });
                     }
                 })
                 .catch(error => {

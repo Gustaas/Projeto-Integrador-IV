@@ -1,6 +1,17 @@
 package com.example.pi.model;
 
-import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_produtos")
@@ -10,7 +21,7 @@ public class Produto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nomeProduto", nullable = false) // Adicionando nullable para evitar valores nulos
+    @Column(name = "nomeProduto", nullable = false)
     private String nomeProduto;
 
     @Column(name = "avaliacao")
@@ -19,20 +30,23 @@ public class Produto {
     @Column(name = "descricao")
     private String descricao;
 
-    @Column(name = "preco", nullable = false) // Adicionando nullable
+    @Column(name = "preco", nullable = false)
     private double preco;
 
-    @Column(name = "qtd", nullable = false) // Adicionando nullable
+    @Column(name = "qtd", nullable = false)
     private int qtd;
 
     @Column(name = "ativo")
     private boolean ativo;
 
-    @Column(name = "imagem")
-    private String imagem;
+    // Campo para armazenar o caminho da imagem principal
+    @Column(name = "imagemPrincipal")
+    private String imagemPrincipal;
+
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ImagemProduto> imagens = new ArrayList<>();
 
     // Getters e Setters
-
     public Long getId() {
         return id;
     }
@@ -57,12 +71,12 @@ public class Produto {
         this.avaliacao = avaliacao;
     }
 
-    public String getDesc() {
+    public String getDescricao() {
         return descricao;
     }
 
-    public void setDesc(String desc) {
-        this.descricao = desc;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public double getPreco() {
@@ -89,11 +103,19 @@ public class Produto {
         this.ativo = ativo;
     }
 
-    public String getImagem() {
-        return imagem;
+    public String getImagemPrincipal() {
+        return imagemPrincipal;
     }
 
-    public void setImagem(String imagem) {
-        this.imagem = imagem;
+    public void setImagemPrincipal(String imagemPrincipal) {
+        this.imagemPrincipal = imagemPrincipal;
+    }
+
+    public List<ImagemProduto> getImagens() {
+        return imagens;
+    }
+
+    public void setImagens(List<ImagemProduto> imagens) {
+        this.imagens = imagens;
     }
 }

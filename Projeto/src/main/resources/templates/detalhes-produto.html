@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Produto</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/carrinhoEstilo.css}">
+    <script src="../js/script.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <img th:src="@{/img/imagem.png}" alt="Logo da Loja">
+        </div>
+        <nav>
+            <a href="#" class="login-link">login ou crie seu login</a>
+            <a th:href="@{/produtos/carrinho}">Carrinho</a>
+            <img src="carrinho.png" alt="Carrinho">
+            <span id="cart-count">0</span>
+        </nav>
+    </header>
+
+    <main>
+        <div class="product-detail">
+            <img id="main-image" src="" alt="Imagem Principal" class="main-image">
+            <div class="product-info">
+                <h2 id="product-name">Nome do Produto</h2>
+                <p id="product-description">Descrição do Produto</p>
+                <p id="product-price">Preço</p>
+                <p id="product-rating">Avaliação</p>
+                <button
+                    onclick="addToCart(document.getElementById('product-name').textContent, document.getElementById('product-price').textContent)">Comprar</button>
+            </div>
+        </div>
+        <div class="thumbnails">
+            <!-- As miniaturas das imagens aparecerão aqui -->
+        </div>
+    </main>
+</body>
+
+</html>

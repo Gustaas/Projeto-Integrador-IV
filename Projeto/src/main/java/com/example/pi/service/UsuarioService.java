@@ -3,18 +3,20 @@ package com.example.pi.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import com.example.pi.model.Usuario;
 import com.example.pi.repository.UsuarioRepository;
-import org.slf4j.Logger;
 
 @Service
 public class UsuarioService {
 
     private UsuarioRepository repository;
+
     private PasswordEncoder senhacript;
     private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
@@ -41,6 +43,17 @@ public class UsuarioService {
         return usuarios;
     }
 
+    public boolean alterarStatusUsuario(Long id, boolean ativo) {
+        Optional<Usuario> usuarioOpt = repository.findById(id);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            usuario.setAtivo(ativo); // Ativando ou desativando o usuário
+            repository.save(usuario);
+            return true;
+        }
+        return false;
+    }
+
     public boolean validarCPF(String cpf) {
         final String cpfLocal = cpf.replaceAll("[^\\d]", ""); // Use uma variável final ou efetivamente final
 
@@ -54,18 +67,21 @@ public class UsuarioService {
             soma += (cpfLocal.charAt(i) - '0') * (10 - i);
         }
         digito = 11 - (soma % 11);
-        if (digito >= 10)
+        if (digito >= 10) {
             digito = 0;
-        if (digito != (cpfLocal.charAt(9) - '0'))
+        }
+        if (digito != (cpfLocal.charAt(9) - '0')) {
             return false;
+        }
 
         soma = 0;
         for (int i = 0; i < 10; i++) {
             soma += (cpfLocal.charAt(i) - '0') * (11 - i);
         }
         digito = 11 - (soma % 11);
-        if (digito >= 10)
+        if (digito >= 10) {
             digito = 0;
+        }
         return digito == (cpfLocal.charAt(10) - '0');
     }
 
@@ -86,7 +102,5 @@ public class UsuarioService {
     public Usuario findById(Long id) {
         return repository.findById(id).orElse(null);
     }
-
-
 
 }

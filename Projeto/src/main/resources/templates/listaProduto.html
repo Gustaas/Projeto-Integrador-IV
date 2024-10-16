@@ -23,7 +23,8 @@
 
         .modal-content {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
+            /* Altera para coluna */
             background-color: #ffffff;
             margin: 5% auto;
             padding: 20px;
@@ -35,21 +36,10 @@
             animation: fadeIn 0.5s ease;
         }
 
-        .modal-content2 {
-            background-color: #ffffff;
-            /* Fundo branco para o conteúdo */
-            margin: 5% auto;
-            /* Centraliza o modal */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            /* Sombra para profundidade */
-            width: 80%;
-            max-width: 500px;
-            /* Largura máxima do modal */
-            position: relative;
-            animation: fadeIn 0.3s;
-            /* Animação de entrada */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         @keyframes fadeIn {
@@ -69,9 +59,6 @@
             font-size: 24px;
             font-weight: bold;
             cursor: pointer;
-            position: absolute;
-            top: 10px;
-            right: 10px;
             transition: color 0.3s;
         }
 
@@ -105,8 +92,7 @@
             margin-right: 20px;
         }
 
-        /* Estilo para o botão de salvar */
-        .visualizar-button {
+        .modal-button {
             background-color: #0056b3;
             color: white;
             border: none;
@@ -118,7 +104,7 @@
             margin-top: 10px;
         }
 
-        .visualizar-button:hover {
+        .modal-button:hover {
             background-color: #00448d;
         }
 
@@ -128,31 +114,32 @@
             margin-bottom: 20px;
         }
 
-        .modal-content p {
-            font-size: 16px;
-            color: #555;
-            margin: 10px 0;
-        }
-
-        /* Estilos para os inputs dentro do modal de alteração */
-        #alterarProdutoForm label {
+        .form-group label {
             font-weight: bold;
             margin-top: 10px;
             display: block;
         }
 
-        #alterarProdutoForm button {
-            margin-top: 20px;
-            background-color: #0056b3;
-            color: white;
-            padding: 10px 16px;
-            border: none;
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="checkbox"] {
+            width: 95%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
             border-radius: 5px;
-            cursor: pointer;
+            font-size: 16px;
+            transition: border 0.3s ease;
         }
 
-        #alterarProdutoForm button:hover {
-            background-color: #00448d;
+        .form-group input[type="text"]:focus,
+        .form-group input[type="number"]:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+
+        .modal-footer button {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -185,26 +172,13 @@
                         <th>Nome</th>
                         <th>Quantidade</th>
                         <th>Valor</th>
-                        <th>Avaliação</th> <!-- Nova coluna -->
-                        <th>Status</th>
+                        <th>Avaliação</th>
                         <th>Ativo</th>
                         <th>Opções</th>
                     </tr>
                 </thead>
                 <tbody id="produtos-tbody">
-                    <tr th:each="produto : ${produtos}">
-                        <td th:text="${produto.id}"></td>
-                        <td th:text="${produto.nomeProduto}"></td>
-                        <td th:text="${produto.qtd}"></td>
-                        <td th:text="${#numbers.formatDecimal(produto.preco, 2, 2)}"></td>
-                        <td th:text="${produto.avaliacao}"></td> <!-- Nova coluna para avaliação -->
-                        <td th:text="${produto.ativo ? 'Disponível' : 'Indisponível'}"></td>
-                        <td><input type="checkbox" class="status-checkbox" th:checked="${produto.ativo}"></td>
-                        <td>
-                            <button class="visualizar-button" data-id="${produto.id}">Visualizar</button>
-                            <button class="visualizar-button alterar-button" data-id="${produto.id}">Alterar</button>
-                        </td>
-                    </tr>
+                    <!-- Produtos serão listados aqui -->
                 </tbody>
             </table>
         </div>
@@ -213,7 +187,7 @@
         <div id="produtoModal" class="modal">
             <div class="modal-content">
                 <span class="close" id="closeModal">&times;</span>
-                <img id="modalImagem" alt="Imagem do Produto" style="width: 400px; height: 400px; object-fit: cover;" />
+                <img id="modalImagem" alt="Imagem do Produto" />
                 <div>
                     <h2 id="modalNomeProduto"></h2>
                     <p><strong>Descrição:</strong> <span id="modalDescricao"></span></p>
@@ -226,199 +200,188 @@
         </div>
 
         <!-- Modal de Alteração -->
-        <div id="alterarProdutoModal" class="modal">
-            <div class="modal-content2">
-                <span class="close" id="closeAlterarModal">&times;</span>
-                <h2>Alterar Produto</h2>
-                <form id="alterarProdutoForm">
-                    <input type="hidden" id="alterarProdutoId"> <!-- ID oculto -->
-                    <label>Nome:</label>
-                    <input type="text" class="modal-input" id="alterarNomeProduto" required>
-                    <label>Descrição:</label>
-                    <textarea class="modal-input" id="alterarDescricaoProduto" required></textarea>
-                    <label>Preço:</label>
-                    <input type="number" class="modal-input" id="alterarPrecoProduto" required>
-                    <label>Quantidade:</label>
-                    <input type="number" class="modal-input" id="alterarQuantidadeProduto" required>
-                    <label>Avaliação:</label> <!-- Novo campo para avaliação -->
-                    <input type="number" class="modal-input" id="alterarAvaliacaoProduto" required>
-                    <label>Ativo:</label>
-                    <input type="checkbox" class="modal-input" id="alterarAtivoProduto">
-                    <label>Imagem (URL):</label>
-                    <input type="text" class="modal-input" id="alterarImagemProduto" required
-                        placeholder="Insira o link da imagem">
-                    <button type="submit" class="visualizar-button">Salvar</button>
-                </form>
+        <div class="modal" id="modalAlterarProduto" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Alterar Produto</h5>
+                        <span class="close" id="closeAlterarModal">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <form id="alterarProdutoForm">
+                            <input type="hidden" id="produto-id">
+                            <div class="form-group">
+                                <label for="produto-nome">Nome</label>
+                                <input type="text" class="modal-input" id="produto-nome">
+                            </div>
+                            <div class="form-group">
+                                <label for="produto-preco">Preço</label>
+                                <input type="text" class="modal-input" id="produto-preco">
+                            </div>
+                            <div class="form-group">
+                                <label for="produto-quantidade">Quantidade</label>
+                                <input type="number" class="modal-input" id="produto-quantidade">
+                            </div>
+                            <div class="form-group">
+                                <label for="produto-avaliacao">Avaliação</label>
+                                <input type="number" class="modal-input" id="produto-avaliacao">
+                            </div>
+                            <div class="form-group">
+                                <label for="produto-ativo">Ativo</label>
+                                <input type="checkbox" id="produto-ativo">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="modal-button" id="closeAlterarModal">Fechar</button>
+                        <button type="button" class="modal-button" onclick="atualizarProduto()">Salvar mudanças</button>
+                    </div>
+                </div>
             </div>
         </div>
-
     </main>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            fetch('/produtos/listarProdutosJson')
-                .then(response => response.json())
-                .then(produtos => {
-                    const tbody = document.getElementById('produtos-tbody');
-                    tbody.innerHTML = '';
+        // Função para listar produtos
+        fetch('/produtos/produtos')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('produtos-tbody');
+                tbody.innerHTML = ''; // Limpa a tabela antes de adicionar novos produtos
+                data.forEach(produto => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td>${produto.id}</td>
+                <td>${produto.nomeProduto}</td>
+                <td>${produto.qtd}</td>
+                <td>R$ ${produto.preco ? produto.preco.toFixed(2) : 'N/A'}</td>
+                <td>${produto.avaliacao ? produto.avaliacao : 'N/A'}</td>
+                <td>${produto.ativo ? 'Sim' : 'Não'}</td>
+                <td>
+                    <button onclick="abrirModal(${produto.id})">Visualizar</button>
+                    <button onclick="abrirModalAlterar(${produto.id})">Alterar</button>
+                    <button onclick="habilitarDesabilitarProduto(${produto.id}, ${produto.ativo})">
+                        ${produto.ativo ? 'Desabilitar' : 'Habilitar'}
+                    </button>
+                </td>
 
-                    produtos.forEach(produto => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                        <td>${produto.id}</td>
-                        <td>${produto.nomeProduto}</td>
-                        <td>${produto.qtd}</td>
-                        <td>${(produto.preco).toFixed(2).replace('.', ',')}</td>
-                        <td>${produto.avaliacao}</td> <!-- Exibindo a avaliação -->
-                        <td>${produto.ativo ? 'Disponível' : 'Indisponível'}</td>
-                        <td><input type="checkbox" class="status-checkbox" ${produto.ativo ? 'checked' : ''}></td>
-                        <td>
-                            <button class="visualizar-button" data-id="${produto.id}">Visualizar</button>
-                            <button class="visualizar-button alterar-button" data-id="${produto.id}">Alterar</button>
-                        </td>
-                    `;
-                        tbody.appendChild(row);
-                    });
+            `;
+                    tbody.appendChild(tr);
+                });
+            });
 
-                    // Adiciona eventos para os botões de visualizar
-                    document.querySelectorAll('.visualizar-button').forEach(button => {
-                        button.addEventListener('click', () => {
-                            const produtoId = button.getAttribute('data-id');
-                            if (button.classList.contains('alterar-button')) {
-                                mostrarAlterarProdutoModal(produtos.find(p => p.id == produtoId));
-                            } else {
-                                mostrarProdutoModal(produtos.find(p => p.id == produtoId));
-                            }
-                        });
-                    });
+        // Função para abrir o modal de visualização
+        function abrirModal(id) {
+            fetch(`/produtos/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao buscar o produto');
+                    }
+                    return response.json();
                 })
-                .catch(error => console.error('Error:', error));
-        });
-
-        function atualizarTabelaProdutos() {
-            fetch('/produtos/listarProdutosJson')
-                .then(response => response.json())
-                .then(produtos => {
-                    const tbody = document.getElementById('produtos-tbody');
-                    tbody.innerHTML = '';
-
-                    produtos.forEach(produto => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                        <td>${produto.id}</td>
-                        <td>${produto.nomeProduto}</td>
-                        <td>${produto.qtd}</td>
-                        <td>${(produto.preco).toFixed(2).replace('.', ',')}</td>
-                        <td>${produto.avaliacao}</td> <!-- Exibindo a avaliação -->
-                        <td>${produto.ativo ? 'Disponível' : 'Indisponível'}</td>
-                        <td><input type="checkbox" class="status-checkbox" ${produto.ativo ? 'checked' : ''}></td>
-                        <td>
-                            <button class="visualizar-button" data-id="${produto.id}">Visualizar</button>
-                            <button class="visualizar-button alterar-button" data-id="${produto.id}">Alterar</button>
-                        </td>
-                    `;
-                        tbody.appendChild(row);
-                    });
-
-                    // Adiciona eventos para os botões de visualizar
-                    document.querySelectorAll('.visualizar-button').forEach(button => {
-                        button.addEventListener('click', () => {
-                            const produtoId = button.getAttribute('data-id');
-                            if (button.classList.contains('alterar-button')) {
-                                mostrarAlterarProdutoModal(produtos.find(p => p.id == produtoId));
-                            } else {
-                                mostrarProdutoModal(produtos.find(p => p.id == produtoId));
-                            }
-                        });
-                    });
+                .then(produto => {
+                    document.getElementById('modalNomeProduto').innerText = produto.nomeProduto;
+                    document.getElementById('modalDescricao').innerText = produto.desc;
+                    document.getElementById('modalPreco').innerText = produto.preco.toFixed(2);
+                    document.getElementById('modalQuantidade').innerText = produto.qtd;
+                    document.getElementById('modalAvaliacao').innerText = produto.avaliacao;
+                    document.getElementById('modalStatus').innerText = produto.ativo ? 'Ativo' : 'Inativo';
+                    document.getElementById('modalImagem').src = produto.imagem;
+                    document.getElementById('produtoModal').style.display = 'block';
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    alert(error.message);
+                });
         }
 
-        function mostrarProdutoModal(produto) {
-            document.getElementById('modalNomeProduto').innerText = produto.nomeProduto;
-            document.getElementById('modalImagem').src = produto.imagem;
-            document.getElementById('modalDescricao').innerText = produto.desc;
-            document.getElementById('modalPreco').innerText = produto.preco.toFixed(2).replace('.', ',');
-            document.getElementById('modalQuantidade').innerText = produto.qtd;
-            document.getElementById('modalAvaliacao').innerText = produto.avaliacao; // Exibir avaliação
-            document.getElementById('modalStatus').innerText = produto.ativo ? 'Disponível' : 'Indisponível';
+        // Função para abrir o modal de alteração
+        function abrirModalAlterar(id) {
+            fetch(`/produtos/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao buscar o produto para alteração');
+                    }
+                    return response.json();
+                })
+                .then(produto => {
+                    document.getElementById('produto-id').value = produto.id;
+                    document.getElementById('produto-nome').value = produto.nomeProduto;
+                    document.getElementById('produto-preco').value = produto.preco;
+                    document.getElementById('produto-quantidade').value = produto.qtd;
+                    document.getElementById('produto-avaliacao').value = produto.avaliacao;
+                    document.getElementById('produto-ativo').checked = produto.ativo;
+                    document.getElementById('modalAlterarProduto').style.display = 'block';
+                })
+                .catch(error => {
+                    alert(error.message);
+                });
+        }
 
-            const modal = document.getElementById('produtoModal');
-            modal.style.display = "block";
+        // Fechar o modal de visualização
+        document.getElementById('closeModal').onclick = function () {
+            document.getElementById('produtoModal').style.display = 'none';
+        }
 
-            document.getElementById('closeModal').onclick = function () {
-                modal.style.display = "none";
-            }
+        // Fechar o modal de alteração
+        document.getElementById('closeAlterarModal').onclick = function () {
+            document.getElementById('modalAlterarProduto').style.display = 'none';
+        }
 
-            window.onclick = function (event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
+        // Fechar o modal ao clicar fora dele
+        window.onclick = function (event) {
+            if (event.target === document.getElementById('produtoModal')) {
+                document.getElementById('produtoModal').style.display = 'none';
+            } else if (event.target === document.getElementById('modalAlterarProduto')) {
+                document.getElementById('modalAlterarProduto').style.display = 'none';
             }
         }
 
+        // Função para atualizar o produto
+        function atualizarProduto() {
+            const id = document.getElementById('produto-id').value;
+            const nome = document.getElementById('produto-nome').value;
+            const preco = parseFloat(document.getElementById('produto-preco').value);
+            const quantidade = parseInt(document.getElementById('produto-quantidade').value);
+            const avaliacao = parseInt(document.getElementById('produto-avaliacao').value);
+            const ativo = document.getElementById('produto-ativo').checked;
 
-        function mostrarAlterarProdutoModal(produto) {
-            document.getElementById('alterarProdutoId').value = produto.id;
-            document.getElementById('alterarNomeProduto').value = produto.nomeProduto;
-            document.getElementById('alterarDescricaoProduto').value = produto.desc || '';
-            document.getElementById('alterarPrecoProduto').value = produto.preco;
-            document.getElementById('alterarQuantidadeProduto').value = produto.qtd;
-            document.getElementById('alterarAvaliacaoProduto').value = produto.avaliacao;
-            document.getElementById('alterarAtivoProduto').checked = produto.ativo;
-            document.getElementById('alterarImagemProduto').value = produto.imagem;
+            const produtoAtualizado = { id, nomeProduto: nome, preco, qtd: quantidade, avaliacao, ativo };
 
-            const modal = document.getElementById('alterarProdutoModal');
-            modal.style.display = "block";
-
-            document.getElementById('closeAlterarModal').onclick = function () {
-                modal.style.display = "none";
-            };
-
-            // Adicionando o evento para o formulário de alteração
-            document.getElementById('alterarProdutoForm').onsubmit = function (event) {
-                event.preventDefault(); // Impede o envio padrão do formulário
-
-                const id = document.getElementById('alterarProdutoId').value;
-                const nome = document.getElementById('alterarNomeProduto').value;
-                const descricao = document.getElementById('alterarDescricaoProduto').value;
-                const preco = parseFloat(document.getElementById('alterarPrecoProduto').value);
-                const quantidade = parseInt(document.getElementById('alterarQuantidadeProduto').value);
-                const avaliacao = parseInt(document.getElementById('alterarAvaliacaoProduto').value);
-                const ativo = document.getElementById('alterarAtivoProduto').checked;
-                const imagem = document.getElementById('alterarImagemProduto').value;
-
-                const produtoAtualizado = {
-                    id: id,
-                    nomeProduto: nome,
-                    desc: descricao,
-                    preco: preco,
-                    qtd: quantidade,
-                    avaliacao: avaliacao,
-                    ativo: ativo,
-                    imagem: imagem
-                };
-
-                // Chamada da API para atualizar o produto
-                fetch('/produtos/alterarProduto', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(produtoAtualizado)
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            modal.style.display = "none";
-                        } else {
-                            return response.text().then(text => { throw new Error(text); });
-                        }
-                        atualizarTabelaProdutos();
-                    })
-                    .catch(error => console.error('Erro:', error));
-            };
+            fetch(`/produtos/alterar/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(produtoAtualizado)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Produto atualizado com sucesso!');
+                        location.reload(); // Atualiza a tabela após a alteração
+                    } else {
+                        alert('Erro ao atualizar o produto.');
+                    }
+                });
         }
+        function habilitarDesabilitarProduto(id, ativo) {
+            const novoStatus = !ativo;
+            fetch(`/produtos/alterar-status/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ativo: novoStatus })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert(`Produto ${novoStatus ? 'habilitado' : 'desabilitado'} com sucesso!`);
+                        location.reload(); // Atualiza a tabela após a alteração
+                    } else {
+                        alert('Erro ao atualizar o status do produto.');
+                    }
+                });
+        }
+
     </script>
 </body>
 

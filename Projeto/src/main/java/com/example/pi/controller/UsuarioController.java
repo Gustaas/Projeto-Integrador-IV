@@ -2,12 +2,22 @@ package com.example.pi.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.example.pi.model.Usuario;
+import com.example.pi.repository.UsuarioRepository;
 import com.example.pi.service.UsuarioService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +29,9 @@ import jakarta.servlet.http.HttpSession;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
@@ -47,6 +60,17 @@ public class UsuarioController {
             return "principal";
         } else {
             return "redirect:/login";
+        }
+    }
+
+    @PutMapping("/alterar-status/{id}")
+    public ResponseEntity<String> alterarStatusUsuario(@PathVariable Long id, @RequestParam boolean ativo) {
+        boolean sucesso = usuarioService.alterarStatusUsuario(id, ativo);
+        if (sucesso) {
+            String mensagem = ativo ? "Usuário ativado com sucesso." : "Usuário desabilitado com sucesso.";
+            return ResponseEntity.ok(mensagem);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
         }
     }
 
