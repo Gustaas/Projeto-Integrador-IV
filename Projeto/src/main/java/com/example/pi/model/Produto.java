@@ -2,10 +2,10 @@ package com.example.pi.model;
 
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,7 +38,8 @@ public class Produto {
     @Column(name = "ativo")
     private boolean ativo;
 
-    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "produto")
+    @JsonManagedReference
     private List<ImagemProduto> imagens;
 
     // Getters e Setters

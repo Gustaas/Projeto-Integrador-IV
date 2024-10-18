@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.pi.model.Produto;
 import com.example.pi.model.Usuario;
 import com.example.pi.repository.UsuarioRepository;
+import com.example.pi.service.ProdutoService;
 import com.example.pi.service.UsuarioService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +30,11 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping
 public class UsuarioController {
 
+    @Autowired
     private final UsuarioService usuarioService;
+
+    @Autowired
+    private ProdutoService produtoService;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -44,6 +50,7 @@ public class UsuarioController {
 
     @GetMapping("/lista-produto")
     public String listaProd() {
+        List<Produto> produtos = produtoService.listarTodos();
         return "listaProduto";
     }
 
