@@ -5,9 +5,219 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrinho</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/carrinhoEstilo.css}">
     <script src="../js/carrinho.js" defer></script>
 </head>
+
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+    }
+
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        background-color: #0056b3;
+        color: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    header .logo img {
+        height: 70px;
+    }
+
+    header nav {
+        display: flex;
+        align-items: center;
+    }
+
+    header nav a {
+        color: white;
+        margin-right: 20px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s;
+    }
+
+    header nav a:hover {
+        color: #ffcc00;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 2em;
+        color: #333;
+    }
+
+    #cart-items {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 80%;
+        margin-left: 10px;
+    }
+
+    .cart-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .cart-item button {
+        background-color: #0056b3;
+        color: white;
+        /* Cor do texto */
+        border: none;
+        /* Sem borda */
+        border-radius: 4px;
+        /* Bordas arredondadas */
+        padding: 5px 10px;
+        /* Espaçamento interno */
+        font-size: 16px;
+        /* Tamanho da fonte */
+        width: 40px;
+        margin:10px;
+        cursor: pointer;
+        /* Cursor de ponteiro ao passar o mouse */
+        margin: 0 5px;
+        /* Espaçamento entre os botões */
+    }
+
+    .cart-item button:hover {
+        background-color: #004494;
+        /* Cor do botão ao passar o mouse */
+    }
+
+    .cart-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .cart-item-image {
+        width: 140px;
+        /* largura da imagem aumentada */
+        height: 140px;
+        /* altura da imagem aumentada */
+        margin-right: 15px;
+        /* espaço entre a imagem e as informações */
+        border-radius: 8px;
+        object-fit: cover;
+        /* Mantém a proporção da imagem */
+    }
+
+    .cart-item-info {
+        display: flex;
+        flex-direction: column;
+        /* Mantém em coluna */
+        justify-content: center;
+        flex-grow: 1;
+        /* Para ocupar o espaço disponível */
+    }
+
+    .cart-item h3,
+    .cart-item p {
+        margin: 0 10px;
+        /* Margens laterais para espaçamento */
+        color: #555;
+    }
+
+    .total {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e8f5e9;
+        border: 1px solid #c8e6c9;
+        border-radius: 8px;
+        width: 300px;
+        /* Largura do retângulo de total */
+        position: fixed;
+        /* Fixa na lateral direita */
+        top: 100px;
+        /* Distância do topo */
+        right: 20px;
+        /* Distância da direita */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #checkout-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s;
+    }
+
+    #checkout-button:hover {
+        background-color: #004494;
+        /* Cor do botão ao passar o mouse */
+    }
+
+    .payment-info {
+        margin-top: 10px;
+    }
+
+    .payment-info input {
+        width: calc(100% - 10px);
+        /* Ajusta a largura dos campos */
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .payment-info input:focus {
+        border-color: #0056b3;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 86, 179, 0.5);
+    }
+
+    .frete-options {
+        margin-top: 10px;
+    }
+
+    .frete-option {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .frete-option:last-child {
+        border-bottom: none;
+    }
+
+    .frete-option span {
+        color: #555;
+    }
+
+    .address-info {
+        margin-top: 10px;
+        background-color: #e1f5fe;
+        padding: 10px;
+        border-radius: 5px;
+        display: none;
+        /* Inicialmente oculto */
+    }
+
+    .address-info p {
+        margin: 5px 0;
+        color: #333;
+    }
+</style>
 
 <body>
     <header>
@@ -18,17 +228,43 @@
             <a th:href="@{/produtos/listarProd}" class="back-to-shop">Voltar Loja</a>
             <a th:href="@{/produtos/carrinho}" class="cart-icon"></a>
             <img th:src="@{/img/imagem.png}" style="height: 50px;" alt="Logo da Loja">
-            <span id="cart-count">0</span>
         </nav>
     </header>
 
     <main>
         <h1>Carrinho de Compras</h1>
-        <div id="cart-items" class="cart-items"></div>
+        <div id="cart-items"></div>
         <div class="total">
             Total: R$ <span id="total-price">0.00</span>
+            <div class="payment-info">
+                <label for="cep">CEP:</label>
+                <input type="text" id="cep" placeholder="Informe seu CEP" onblur="fetchAddress()">
+
+                <div class="frete-options">
+                    <h4>Opções de Frete:</h4>
+                    <div class="frete-option">
+                        <span>SEDEX:</span> <span>R$ 15,00</span>
+                    </div>
+                    <div class="frete-option">
+                        <span>PAC:</span> <span>R$ 10,00</span>
+                    </div>
+                    <div class="frete-option">
+                        <span>Retirar na Loja:</span> <span>Grátis</span>
+                    </div>
+                </div>
+
+                <label for="parcelamento">Parcelamento:</label>
+                <input type="text" id="parcelamento" value="Até 10x sem juros" disabled>
+
+                <!-- Seção para exibir o endereço -->
+                <div class="address-info" id="address-info">
+                    <h4>Endereço:</h4>
+                    <p id="address"></p>
+                </div>
+
+                <button id="checkout-button">Finalizar Compra</button>
+            </div>
         </div>
-        <button id="checkout-button">Finalizar Compra</button>
     </main>
 
     <script>
@@ -56,14 +292,17 @@
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('cart-item');
                 itemDiv.innerHTML = `
-            <h3>${item.name}</h3>
-            <p>Preço: ${item.price}</p>
-            <p>Quantidade: <span class="quantity">${item.quantity}</span></p>
-            <button onclick="increaseQuantity('${item.name}')">+</button>
-            <button onclick="decreaseQuantity('${item.name}')">-</button>
-        `;
+                <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                <div class="cart-item-info">
+                    <h3>${item.name}</h3>
+                    <p>Preço: ${item.price}</p>
+                    <p>Quantidade: <span class="quantity">${item.quantity}</span></p>
+                    <button onclick="increaseQuantity('${item.name}')">+</button>
+                    <br>
+                    <button onclick="decreaseQuantity('${item.name}')">-</button>
+                </div>
+            `;
                 cartItemsContainer.appendChild(itemDiv);
-
                 // Adiciona o preço ao total
                 const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
                 total += priceValue * item.quantity; // Corrige o cálculo do total
@@ -77,37 +316,55 @@
             const product = cart.find(item => item.name === productName);
             if (product) {
                 product.quantity += 1;
-                localStorage.setItem('cart', JSON.stringify(cart)); // Atualiza o localStorage
-                displayCart(); // Atualiza a exibição do carrinho
             }
+            localStorage.setItem('cart', JSON.stringify(cart)); // Atualiza o carrinho no localStorage
+            displayCart(); // Atualiza a exibição do carrinho
         }
 
         // Função para diminuir a quantidade de um item no carrinho
         function decreaseQuantity(productName) {
             const product = cart.find(item => item.name === productName);
-            if (product) {
+            if (product && product.quantity > 0) {
                 product.quantity -= 1;
-                if (product.quantity <= 0) {
-                    cart = cart.filter(item => item.name !== productName); // Remove o item se a quantidade for 0
+                if (product.quantity === 0) {
+                    cart = cart.filter(item => item.name !== productName); // Remove o item se a quantidade for zero
                 }
-                localStorage.setItem('cart', JSON.stringify(cart)); // Atualiza o localStorage
-                displayCart(); // Atualiza a exibição do carrinho
+            }
+            localStorage.setItem('cart', JSON.stringify(cart)); // Atualiza o carrinho no localStorage
+            displayCart(); // Atualiza a exibição do carrinho
+        }
+
+        // Inicializa a exibição do carrinho
+        displayCart();
+
+        // Função para buscar endereço pelo CEP
+        function fetchAddress() {
+            const cep = document.getElementById('cep').value.replace('-', '');
+            const addressInfo = document.getElementById('address-info');
+            const address = document.getElementById('address');
+
+            if (cep.length === 8) { // Verifica se o CEP tem 8 dígitos
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.erro) {
+                            address.textContent = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
+                            addressInfo.style.display = 'block'; // Exibe a seção de endereço
+                        } else {
+                            address.textContent = 'Endereço não encontrado.';
+                            addressInfo.style.display = 'block'; // Exibe a seção de endereço
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar o endereço:', error);
+                        address.textContent = 'Erro ao buscar o endereço.';
+                        addressInfo.style.display = 'block'; // Exibe a seção de endereço
+                    });
+            } else {
+                address.textContent = '';
+                addressInfo.style.display = 'none'; // Oculta a seção se o CEP não for válido
             }
         }
-
-        // Chama a função de exibição do carrinho quando a página de carrinho é carregada
-        window.onload = function () {
-            displayCart();
-            updateCartCount();
-        };
-
-        // Atualiza a contagem total de produtos no carrinho
-        function updateCartCount() {
-            document.getElementById('cart-count').textContent = cart.reduce((acc, item) => acc + item.quantity, 0);
-        }
-
-
-
     </script>
 </body>
 

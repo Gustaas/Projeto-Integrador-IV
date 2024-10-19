@@ -1,0 +1,203 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    /* Cor de fundo suave */
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0056b3;
+    /* Cor do cabeçalho */
+    padding: 10px 20px;
+    color: white;
+}
+
+.logo img {
+    height: 50px;
+}
+
+nav .imagem {
+    display: flex;
+    align-items: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+/* Listagem de Produtos */
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+}
+
+.product-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 15px;
+    padding: 15px;
+    text-align: center;
+    width: 250px;
+    /* Largura fixa para cada cartão */
+    transition: transform 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    /* Eleva o cartão ao passar o mouse */
+}
+
+.product-image {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.detail-button,
+.buy-button {
+    background-color: #0056b3;
+    /* Cor do botão */
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.detail-button:hover,
+.buy-button:hover {
+    background-color: #004494;
+    /* Cor do botão ao passar o mouse */
+}
+
+/* Estilo do Modal */
+.modal {
+    display: none;
+    /* Inicialmente oculto */
+    position: fixed;
+    /* Fixo na tela */
+    z-index: 1;
+    /* Fica sobre outros elementos */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Ocupa toda a largura da tela */
+    height: 100%;
+    /* Ocupa toda a altura da tela */
+    overflow: auto;
+    /* Permite rolagem se necessário */
+    background-color: rgba(0, 0, 0, 0.8);
+    /* Fundo escuro com transparência */
+}
+
+.modal-content {
+    background-color: #fff;
+    /* Fundo branco */
+    margin: 5% auto;
+    /* Margem no topo e centralizado */
+    padding: 20px;
+    border-radius: 8px;
+    /* Bordas arredondadas */
+    width: 80%;
+    /* Largura do modal */
+    max-width: 800px;
+    /* Largura máxima do modal */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Sombra para dar profundidade */
+}
+
+.modal-main-image {
+    width: 100%;
+    /* Ocupa toda a largura do modal */
+    height: auto;
+    /* Mantém a proporção */
+    border-radius: 8px;
+    /* Bordas arredondadas */
+    margin-bottom: 15px;
+    /* Espaço abaixo da imagem principal */
+}
+
+/* Thumbnails */
+.modal-thumbnails {
+    display: flex;
+    justify-content: center;
+    /* Centraliza as miniaturas */
+    margin-bottom: 10px;
+    /* Espaço abaixo das miniaturas */
+}
+
+.modal-thumbnails img {
+    width: 80px;
+    /* Largura das miniaturas */
+    height: auto;
+    /* Mantém a proporção */
+    margin: 0 5px;
+    /* Espaço entre as miniaturas */
+    border-radius: 4px;
+    /* Bordas arredondadas */
+    cursor: pointer;
+    /* Cursor em forma de ponteiro */
+    transition: transform 0.3s;
+    /* Transição suave */
+}
+
+.modal-thumbnails img:hover {
+    transform: scale(1.1);
+    /* Aumenta a miniatura ao passar o mouse */
+}
+
+/* Estilo da Avaliação */
+.modal-product-rating {
+    font-size: 20px;
+    /* Ajusta o tamanho das estrelas */
+    color: gold;
+    /* Altera a cor das estrelas */
+}
+
+/* Estilo do Botão de Fechar */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+    /* Cursor em forma de ponteiro */
+}
+
+@keyframes zoomIn {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.product-card {
+    transition: transform 0.3s;
+}
+
+.product-card.zoom {
+    animation: zoomIn 0.3s ease forwards;
+}

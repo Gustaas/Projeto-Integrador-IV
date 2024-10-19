@@ -1,11 +1,17 @@
 package com.example.pi.controller;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.pi.model.ImagemProduto;
 import com.example.pi.model.Produto;
+import com.example.pi.repository.ImagemProdutoRepository;
 import com.example.pi.repository.ProdutoRepository;
 import com.example.pi.service.ImagemService;
 import com.example.pi.service.ProdutoService;
@@ -38,6 +45,9 @@ public class ProdutoController {
 
     @Autowired
     private ProdutoRepository produtoRepository;
+
+    @Autowired
+    private ImagemProdutoRepository imagemRepository;
 
     public ProdutoController(ProdutoService produtoService) {
         this.produtoService = produtoService;
@@ -62,11 +72,6 @@ public class ProdutoController {
     @GetMapping("/listarProd")
     public String listarProds() {
         return "produtos-index";
-    }
-
-    @GetMapping("/detalhesProduto")
-    public String detalhes() {
-        return "detalhes-produto";
     }
 
     @PutMapping("/alterar-status/{id}")
@@ -118,6 +123,9 @@ public class ProdutoController {
     @PutMapping("/alterar/{id}")
     public ResponseEntity<Produto> atualizarProduto(@PathVariable Long id, @RequestBody Produto produto) {
         Optional<Produto> produtoExistente = produtoRepository.findById(id);
+        if (!produtoExistente.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
 
         Produto produtoAtualizado = produtoExistente.get();
         produtoAtualizado.setNomeProduto(produto.getNomeProduto());
@@ -129,6 +137,44 @@ public class ProdutoController {
 
         produtoRepository.save(produtoAtualizado);
         return ResponseEntity.ok(produtoAtualizado);
+    }
+
+    @GetMapping("/{id}/imagens")
+    @ResponseBody
+    public ResponseEntity<List<ImagemProduto>> buscarImagensPorProdutoId(@PathVariable Long id) {
+        List<ImagemProduto> imagens = imagemService.buscarPorProdutoId(id);
+
+        if (!imagens.isEmpty()) {
+            for (ImagemProduto imagem : imagens) {
+                // Supondo que o link original é algo como "C:\\...\\img\\exemplo de nome"
+                String linkOriginal = imagem.getLink();
+                String nomeImagem = new File(linkOriginal).getName();
+                // Aqui, assumimos que as imagens são acessíveis através do caminho relativo
+                imagem.setLink("/img/" + nomeImagem); // Ajuste para o caminho correto
+                imagem.setProduto(null);
+            }
+            return ResponseEntity.ok(imagens);
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/imagens/{nomeImagem}")
+    public ResponseEntity<Resource> servirImagem(@PathVariable String nomeImagem) {
+        try {
+            Path caminhoImagem = Paths.get("C:\\Users\\conta\\Desktop\\Projeto-Integrador-IV\\Projeto\\src\\main\\resources\\static\\img").resolve(nomeImagem);
+            Resource imagem = new UrlResource(caminhoImagem.toUri());
+
+            if (imagem.exists() || imagem.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + imagem.getFilename() + "\"")
+                        .body(imagem);
+            } else {
+                throw new RuntimeException("Imagem não encontrada ou não é legível.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PostMapping("/cadastrar")
@@ -152,9 +198,8 @@ public class ProdutoController {
             produto.setAtivo(ativo);
 
             List<ImagemProduto> listaImagens = new ArrayList<>();
-            for (int i = 0; i < imagens.size(); i++) {
-                MultipartFile imagem = imagens.get(i);
-                String link = imagemService.salvarImagem(imagem);
+            for (MultipartFile imagem : imagens) {
+                String link = imagemService.salvarImagem(imagem); // Salva a imagem e obtém o link
                 ImagemProduto novaImagem = new ImagemProduto();
                 novaImagem.setLink(link);
                 novaImagem.setProduto(produto);
@@ -168,7 +213,10 @@ public class ProdutoController {
             }
 
             produto.setImagens(listaImagens);
-            Produto produtoSalvo = produtoRepository.save(produto);
+            Produto produtoSalvo = produtoRepository.save(produto); // Salva o produto no banco
+
+            // Salva as imagens associadas ao produto no banco
+            imagemRepository.saveAll(listaImagens); // Salva todas as imagens
 
             return ResponseEntity.status(HttpStatus.CREATED).body(produtoSalvo);
         } catch (Exception e) {

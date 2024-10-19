@@ -1,47 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loja Online</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/carrinhoEstilo.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/produtosEstilo.css}">
     <script src="../js/script.js" defer></script>
     <style>
-        /* Adicione estilos para o modal, se necessário */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0, 0, 0);
-            background-color: rgba(0, 0, 0, 0.4);
-        }
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-
-        .modal-thumbnails {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-thumbnails img {
-            width: 50px;
-            height: auto;
-            margin: 0 5px;
-            cursor: pointer;
-        }
     </style>
 </head>
 
@@ -60,121 +27,170 @@
     </header>
 
     <main>
-        <div class="product-list">
-            <div class="product-card">
-                <img th:src="@{/img/garrafa1.jpg}" alt="Produto 1" class="product-image">
-                <h3>Nome do Produto 1</h3>
-                <p>Preço: R$ 99,99</p>
-                <a href="#" class="detail-button" data-product-id="1">Detalhes</a>
-                <button class="buy-button" onclick="addToCart('Nome do Produto 1', 'R$ 99,99')">Comprar</button>
-            </div>
-            <div class="product-card">
-                <img th:src="@{/img/garrafa2.jpg}" alt="Produto 2" class="product-image">
-                <h3>Nome do Produto 2</h3>
-                <p>Preço: R$ 149,99</p>
-                <a href="#" class="detail-button" data-product-id="2">Detalhes</a>
-                <button class="buy-button" onclick="addToCart('Nome do Produto 2', 'R$ 149,99')">Comprar</button>
-            </div>
-            <!-- Adicione outros produtos aqui -->
-        </div>
+        <div class="product-list" id="product-list"></div>
     </main>
 
     <div id="modal" class="modal" style="display: none;">
         <div class="modal-content">
-            <span class="close" id="close-modal">&times;</span>
-            <img id="modal-image" src="" alt="Imagem do Produto">
-            <div class="modal-thumbnails">
-                <button class="prev" id="prev">&lt;</button>
-                <img id="modal-thumbnail" src="" alt="Imagem do Produto">
-                <button class="next" id="next">&gt;</button>
-            </div>
-            <div id="modal-product-info">
-                <h2 id="modal-product-name">Nome do Produto</h2>
-                <p id="modal-product-description">Descrição do Produto</p>
-                <p id="modal-product-price">Preço</p>
-                <p id="modal-product-rating">Avaliação</p>
-                <button id="modal-buy-button"
-                    onclick="addToCart(document.getElementById('modal-product-name').textContent, document.getElementById('modal-product-price').textContent)">Comprar</button>
-            </div>
+            <span id="close-modal" class="close">&times;</span>
+            <div class="modal-thumbnails" id="modal-thumbnails"></div>
+            <img id="modal-image" src="" alt="Imagem do Produto" class="modal-main-image">
+            <h2 id="modal-product-name"></h2>
+            <p><strong>Descrição:</strong> <span id="modal-product-description"></span></p>
+            <p><strong>Preço:</strong> <span id="modal-product-price"></span></p>
+            <p><strong>Avaliação:</strong> <span id="modal-product-rating"></span></p>
+
         </div>
     </div>
 
+
+
+
     <script>
-
-
-        // Simulando um banco de dados de produtos
-        const products = [
-            {
-                id: 1,
-                name: "Nome do Produto 1",
-                description: "Descrição detalhada do Produto 1.",
-                price: "R$ 99,99",
-                rating: "★★★★☆",
-                mainImage: "garrafa1.jpg",
-                thumbnails: ["garrafa1.jpg", "garrafa2.jpg", "garrafa3.jpg"]
-            },
-            {
-                id: 2,
-                name: "Nome do Produto 2",
-                description: "Descrição detalhada do Produto 2.",
-                price: "R$ 149,99",
-                rating: "★★★★★",
-                mainImage: "garrafa2.jpg",
-                thumbnails: ["garrafa2.jpg", "garrafa1.jpg", "garrafa3.jpg"]
-            },
-            // Adicione mais produtos conforme necessário
-        ];
-
-
         document.addEventListener('DOMContentLoaded', function () {
-            const detailButtons = document.querySelectorAll('.detail-button');
-            const modal = document.getElementById('modal');
-            const closeModal = document.getElementById('close-modal');
-            const modalImage = document.getElementById('modal-image');
-            const modalThumbnail = document.getElementById('modal-thumbnail');
-            const modalProductName = document.getElementById('modal-product-name');
-            const modalProductDescription = document.getElementById('modal-product-description');
-            const modalProductPrice = document.getElementById('modal-product-price');
-            const modalProductRating = document.getElementById('modal-product-rating');
+            fetch('/produtos/listarProdutosJson')
+                .then(response => response.json())
+                .then(produtos => {
+                    const productList = document.getElementById('product-list');
+                    produtos.forEach(produto => {
+                        const productCard = document.createElement('div');
+                        productCard.classList.add('product-card');
+                        const imageSrc = produto.imagens.length > 0 ? `../img/${produto.imagens[0].link}` : '../img/default-image.png';
+                        productCard.innerHTML = `
+                            <img src="${imageSrc}" alt="${produto.nomeProduto}" class="product-image">
+                            <h3>${produto.nomeProduto}</h3>
+                            <p>Preço: R$ ${produto.preco.toFixed(2)}</p>
+                            <a href="#" class="detail-button" data-product-id="${produto.id}">Detalhes</a>
+                            <button class="buy-button" onclick="addToCart('${produto.nomeProduto}', 'R$ ${produto.preco.toFixed(2)}', this, '${imageSrc}')">Comprar</button>
+                        `;
+                        console.log('Imagem do produto:', imageSrc);
+                        productList.appendChild(productCard);
+                    });
 
-            // Função para abrir o modal e preencher as informações do produto
-            detailButtons.forEach(button => {
-                button.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    const productId = button.getAttribute('data-product-id');
-                    const product = products.find(p => p.id == productId);
+                    initializeDetailButtons(produtos);
+                })
+                .catch(error => console.error('Erro ao buscar produtos:', error));
 
-                    if (product) {
-                        modalImage.src = `../img/${product.mainImage}`; // Caminho da imagem principal
-                        modalThumbnail.src = `../img/${product.thumbnails[0]}`; // Caminho da miniatura
-                        modalProductName.textContent = product.name;
-                        modalProductDescription.textContent = product.description;
-                        modalProductPrice.textContent = product.price;
-                        modalProductRating.textContent = product.rating;
-                        modal.style.display = 'block'; // Exibe o modal
-                    }
-                });
-            });
+            function generateStarRating(rating) {
+                const fullStar = '★'; // Estrela cheia
+                const emptyStar = '☆'; // Estrela vazia
+                const roundedRating = Math.round(rating); // Arredonda a avaliação
 
-            // Fechar o modal
-            closeModal.addEventListener('click', function () {
-                modal.style.display = 'none';
-            });
-
-            // Fechar o modal ao clicar fora dele
-            window.addEventListener('click', function (event) {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
+                let stars = '';
+                for (let i = 1; i <= 5; i++) {
+                    stars += i <= roundedRating ? fullStar : emptyStar; // Adiciona estrela cheia ou vazia
                 }
-            });
+                return stars; // Retorna as estrelas geradas
+            }
+
+            function initializeDetailButtons(produtos) {
+                const detailButtons = document.querySelectorAll('.detail-button');
+                const modal = document.getElementById('modal');
+                const closeModal = document.getElementById('close-modal');
+                const modalImage = document.getElementById('modal-image');
+                const modalThumbnails = document.getElementById('modal-thumbnails');
+                const modalProductName = document.getElementById('modal-product-name');
+                const modalProductDescription = document.getElementById('modal-product-description');
+                const modalProductPrice = document.getElementById('modal-product-price');
+                const modalProductRating = document.getElementById('modal-product-rating');
+
+                detailButtons.forEach(button => {
+                    button.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        const productId = button.getAttribute('data-product-id');
+                        const product = produtos.find(p => p.id == productId);
+
+                        if (product) {
+                            fetch(`/produtos/${productId}`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Produto não encontrado');
+                                    }
+                                    return response.json();
+                                })
+                                .then(produtoDetalhes => {
+                                    // Verifica se as imagens existem
+                                    const imagemPrincipal = produtoDetalhes.imagens ? produtoDetalhes.imagens.find(img => img.principal) : null;
+                                    if (imagemPrincipal) {
+                                        modalImage.src = `../img/${imagemPrincipal.link}`; // Atualiza com a imagem principal
+                                        // Para o carrossel, vamos adicionar todas as imagens
+                                        const modalThumbnailContainer = document.getElementById('modal-thumbnails');
+                                        modalThumbnailContainer.innerHTML = ''; // Limpa imagens antigas
+                                        produtoDetalhes.imagens.forEach(img => {
+                                            const imgElement = document.createElement('img');
+                                            imgElement.src = `../img/${img.link}`;
+                                            imgElement.classList.add('thumbnail');
+                                            imgElement.addEventListener('click', () => {
+                                                modalImage.src = imgElement.src; // Troca a imagem principal ao clicar na miniatura
+                                            });
+                                            modalThumbnailContainer.appendChild(imgElement);
+                                        });
+                                    } else {
+                                        modalImage.src = '../img/default-image.png';
+                                        console.warn('Imagem principal não encontrada, usando imagem padrão.');
+                                    }
+                                    modalProductName.textContent = produtoDetalhes.nomeProduto || 'Nome não disponível';
+                                    modalProductDescription.textContent = produtoDetalhes.descricao || 'Descrição não disponível';
+                                    modalProductPrice.textContent = `R$ ${produtoDetalhes.preco ? produtoDetalhes.preco.toFixed(2) : 'Preço não disponível'}`;
+                                    modalProductRating.innerHTML = generateStarRating(produtoDetalhes.avaliacao) || 'Sem avaliação';
+                                    modal.style.display = 'block'; // Exibe o modal
+                                })
+
+                        }
+                    });
+                });
+
+                closeModal.onclick = function () {
+                    modal.style.display = 'none'; // Fecha o modal
+                };
+
+                window.onclick = function (event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none'; // Fecha o modal ao clicar fora dele
+                    }
+                };
+
+            };
         });
 
+        function addToCart(name, price, button, imageSrc) {
+            // Verifica se a imagem não é undefined
+            if (!imageSrc || imageSrc === "undefined") {
+                console.warn("Imagem não definida. Adicionando o item sem imagem.");
+                imageSrc = ""; // Ou defina um valor padrão
+            }
+            console.log('Imagem a ser adicionada:', imageSrc);
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingProduct = cart.find(item => item.name === name);
 
-        // Simulação da função addToCart (para você implementar)
-        function addToCart(productName, productPrice) {
-            // Lógica para adicionar ao carrinho
-            console.log(`Adicionado ao carrinho: ${productName} - ${productPrice}`);
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+            } else {
+                cart.push({
+                    name: name,
+                    price: price,
+                    quantity: 1,
+                    image: imageSrc
+                });
+            }
+
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            displayCart();
         }
+
+
+
+
+        // Função para atualizar a contagem de itens no carrinho
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalCount = cart.reduce((total, item) => total + item.quantity, 0); // Soma a quantidade de todos os itens
+            const cartCountElement = document.getElementById('cart-count');
+            cartCountElement.textContent = totalCount; // Atualiza o texto do contador no carrinho
+        }
+
     </script>
 </body>
 

@@ -1,5 +1,7 @@
 package com.example.pi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,6 +24,7 @@ public class ImagemProduto {
 
     @ManyToOne
     @JoinColumn(name = "id_produto")
+    @JsonBackReference
     private Produto produto;
 
     @Column(name = "principal")
