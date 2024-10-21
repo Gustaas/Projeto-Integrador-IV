@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/user.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/cadastroEstilo.css}">
+</head>
+
+<body>
+    <section class="content">
+        <div class="login-container">
+            <h1>Login De Usuário</h1>
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                <input type="password" id="senha" name="senha" placeholder="Senha" required>
+                <div class="button-group">
+                    <button type="submit">Login</button>
+                </div>
+                <div id="error-message" style="color:red;"></div>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const senha = document.getElementById("senha").value;
+
+            try {
+                const response = await fetch("http://localhost:8080/user/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email, senha })
+                });
+
+                const result = await response.text();
+                const errorMessageDiv = document.getElementById("error-message");
+
+                if (response.ok) {
+                    sessionStorage.setItem('usuarioLogado', 'true');
+                    window.location.href = "/produtos/listarProd";
+                } else {
+                    errorMessageDiv.innerText = result;
+                }
+            } catch (error) {
+                console.error("Erro ao tentar fazer login:", error);
+                document.getElementById("error-message").innerText = "Erro ao tentar se conectar ao servidor.";
+            }
+        }
+    </script>
+</body>
+
+</html>

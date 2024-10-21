@@ -8,7 +8,20 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/produtosEstilo.css}">
     <script src="../js/script.js" defer></script>
     <style>
+        .logout-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
+        .logout-button:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 
@@ -24,8 +37,9 @@
                 <span id="cart-count">0</span>
             </div>
             <div class="user-actions">
-                <a href="#" class="login-button">Login</a>
+                <a th:href="@{/user/loginUser}" class="login-button">Login</a>
                 <a th:href="@{/user/cadastroUser}" class="register-button">Cadastrar</a>
+                <button id="logout-button" class="logout-button" style="display: none;">Logout</button>
             </div>
         </nav>
     </header>
@@ -47,10 +61,48 @@
         </div>
     </div>
 
-
-
-
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const logoutButton = document.getElementById('logout-button');
+            const loginButton = document.querySelector('.login-button');
+            const registerButton = document.querySelector('.register-button');
+
+            if (isUserLoggedIn()) {
+                logoutButton.style.display = 'inline-block';
+                loginButton.style.display = 'none';
+                registerButton.style.display = 'none';
+            } else {
+                logoutButton.style.display = 'none';
+                loginButton.style.display = 'inline-block';
+                registerButton.style.display = 'inline-block';
+            }
+
+            logoutButton.addEventListener('click', function () {
+                fetch('/user/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            sessionStorage.removeItem('usuarioLogado');
+                            localStorage.removeItem('cart');
+                            window.location.href = '/produtos/listarProd';
+                        } else {
+                            console.error('Erro ao fazer logout');
+                        }
+                    })
+                    .catch(error => console.error('Erro ao desconectar:', error));
+            });
+
+            function isUserLoggedIn() {
+                return sessionStorage.getItem('usuarioLogado') !== null;
+            }
+        });
+
+
+
         document.addEventListener('DOMContentLoaded', function () {
             fetch('/produtos/listarProdutosJson')
                 .then(response => response.json())
