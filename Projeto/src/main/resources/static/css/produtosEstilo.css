@@ -142,7 +142,6 @@ nav a {
     height: auto;
     /* Mantém a proporção */
     margin: 0 5px;
-    /* Espaço entre as miniaturas */
     border-radius: 4px;
     /* Bordas arredondadas */
     cursor: pointer;
@@ -200,4 +199,44 @@ nav a {
 
 .product-card.zoom {
     animation: zoomIn 0.3s ease forwards;
+}
+
+/* Estilo para os botões de login e cadastro */
+.user-actions {
+    display: flex;
+    align-items: center;
+}
+
+.login-button,
+.register-button {
+    background-color: #0056b3;
+    /* Cor do botão */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    margin-left: 10px;
+}
+
+.login-button:hover,
+.register-button:hover {
+    background-color: #004494;
+    /* Cor ao passar o mouse */
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+    .user-actions {
+        flex-direction: column;
+        margin-top: 10px;
+    }
+
+    .login-button,
+    .register-button {
+        margin-left: 0;
+        margin-top: 5px;
+    }
 }

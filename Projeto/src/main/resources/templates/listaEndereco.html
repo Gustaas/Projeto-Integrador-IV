@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/endereco.css}">
+    <title>Dados do Cadastro</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Dados do Cadastro</h1>
+        <div id="userData"></div>
+
+        <h2>Endereço de Faturamento</h2>
+        <div id="billingAddress"></div>
+
+        <h2>Endereços de Entrega</h2>
+        <div id="deliveryAddresses"></div>
+
+        <button onclick="goToUpdate()">Alterar Dados</button>
+        <button onclick="goBack()">Voltar</button>
+    </div>
+
+    <script>
+        function displayUserData() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+
+            if (userData) {
+                const userDataDiv = document.getElementById('userData');
+
+                userDataDiv.innerHTML = `
+                    <h2>Informações Pessoais</h2>
+                    <p><strong>Nome Completo:</strong> ${userData.fullName}</p>
+                    <p><strong>Data de Nascimento:</strong> ${userData.birthDate}</p>
+                    <p><strong>Gênero:</strong> ${userData.gender}</p>
+                    <p><strong>Email:</strong> ${userData.email}</p>
+                    <p><strong>CPF:</strong> ${userData.cpf}</p>
+                `;
+
+                const billingAddressDiv = document.getElementById('billingAddress');
+                billingAddressDiv.innerHTML = `
+                    <p><strong>CEP:</strong> ${userData.billingAddress.cep}</p>
+                    <p><strong>Logradouro:</strong> ${userData.billingAddress.logradouro}</p>
+                    <p><strong>Número:</strong> ${userData.billingAddress.numero}</p>
+                    <p><strong>Complemento:</strong> ${userData.billingAddress.complemento}</p>
+                    <p><strong>Bairro:</strong> ${userData.billingAddress.bairro}</p>
+                    <p><strong>Cidade:</strong> ${userData.billingAddress.cidade}</p>
+                    <p><strong>UF:</strong> ${userData.billingAddress.uf}</p>
+                `;
+
+                const deliveryAddressesDiv = document.getElementById('deliveryAddresses');
+                deliveryAddressesDiv.innerHTML = userData.deliveryAddresses.map(addr => `
+                    <div>
+                        <p><strong>CEP:</strong> ${addr.cep}</p>
+                        <p><strong>Logradouro:</strong> ${addr.logradouro}</p>
+                        <p><strong>Número:</strong> ${addr.numero}</p>
+                        <p><strong>Complemento:</strong> ${addr.complemento}</p>
+                        <p><strong>Bairro:</strong> ${addr.bairro}</p>
+                        <p><strong>Cidade:</strong> ${addr.cidade}</p>
+                        <p><strong>UF:</strong> ${addr.uf}</p>
+                    </div>
+                `).join('') || '<p>Nenhum endereço de entrega cadastrado.</p>';
+            }
+        }
+
+        function goToUpdate() {
+            window.location.href = 'update.html';
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        window.onload = displayUserData;
+    </script>
+</body>
+</html>
