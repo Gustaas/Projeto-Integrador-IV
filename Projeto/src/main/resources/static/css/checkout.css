@@ -1,0 +1,291 @@
+/* Reset e definição de fontes */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Cabeçalho */
+.header {
+    background-color: #0056b3;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+}
+
+.header .back-button {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    position: absolute;
+    left: 20px;
+    top: 20px;
+}
+
+.header h1 {
+    font-size: 24px;
+    margin-top: 0;
+}
+
+/* Contêiner principal */
+.container {
+    max-width: 1600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Seção de informações do cliente */
+.cliente-section {
+    margin-bottom: 30px;
+}
+
+.cliente-section h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.cliente-section .form-group {
+    margin-bottom: 15px;
+}
+
+.cliente-section label {
+    font-weight: bold;
+}
+
+.cliente-section input,
+.cliente-section select {
+    width: 100%;
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Seção de Endereços */
+.enderecos-section {
+    margin-bottom: 30px;
+}
+
+.enderecos-section h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.enderecos-section button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.enderecos-section button:hover {
+    background-color: #218838;
+}
+
+#enderecos-list {
+    margin-bottom: 20px;
+}
+
+#enderecos-list p {
+    margin: 5px 0;
+}
+
+#enderecos-list button {
+    background-color: #17a2b8;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#enderecos-list button:hover {
+    background-color: #138496;
+}
+
+/* Seção de Checkout */
+.checkout-section {
+    margin-top: 30px;
+}
+
+.checkout-section h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.checkout-section .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.checkout-section .col-md-6 {
+    flex: 1;
+}
+
+.checkout-section select {
+    width: 100%;
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.checkout-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.checkout-section li {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.checkout-section li strong {
+    font-weight: bold;
+}
+
+.checkout-section .btn-success {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.checkout-section .btn-success:hover {
+    background-color: #218838;
+}
+
+/* Modal */
+.modal-content {
+    padding: 20px;
+}
+
+.modal-header {
+    background-color: #0056b3;
+    color: white;
+}
+
+.modal-title {
+    font-size: 20px;
+}
+
+.close {
+    color: white;
+}
+
+.modal-body {
+    padding-top: 10px;
+}
+
+.modal-body .form-group {
+    margin-bottom: 15px;
+}
+
+.modal-body label {
+    font-weight: bold;
+}
+
+.modal-body input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.modal-footer {
+    padding-top: 10px;
+}
+
+.modal-footer .btn-success {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.modal-footer .btn-success:hover {
+    background-color: #218838;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .checkout-section .row {
+        flex-direction: column;
+    }
+
+    .checkout-section .col-md-6 {
+        margin-bottom: 20px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+}
+
+/* Order Item - Carrinho de Compras */
+.order-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.order-item-details {
+    display: flex;
+    align-items: center;
+}
+
+.order-item-image {
+    width: 60px;
+    /* Aumenta um pouco o tamanho da imagem */
+    height: 60px;
+    object-fit: cover;
+    margin-right: 15px;
+    /* Aumenta o espaçamento entre a imagem e os detalhes */
+}
+
+.order-item-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.order-item-info p {
+    font-size: 16px;
+}
+
+.order-item-price {
+    margin-left: auto;
+    font-size: 18px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+/* Exibição de múltiplos produtos por linha */
+@media (max-width: 768px) {
+    .order-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

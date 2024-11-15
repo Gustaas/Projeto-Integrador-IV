@@ -28,6 +28,8 @@
     <script>
         async function handleLogin(event) {
             event.preventDefault();
+            const errorMessageDiv = document.getElementById("error-message");
+            errorMessageDiv.innerText = "";
 
             const email = document.getElementById("email").value;
             const senha = document.getElementById("senha").value;
@@ -41,14 +43,14 @@
                     body: JSON.stringify({ email, senha })
                 });
 
-                const result = await response.text();
-                const errorMessageDiv = document.getElementById("error-message");
+                const result = await response.json();
 
                 if (response.ok) {
                     sessionStorage.setItem('usuarioLogado', 'true');
+                    sessionStorage.setItem('userId', result.userId);
                     window.location.href = "/produtos/listarProd";
                 } else {
-                    errorMessageDiv.innerText = result;
+                    errorMessageDiv.innerText = result.message || result;
                 }
             } catch (error) {
                 console.error("Erro ao tentar fazer login:", error);

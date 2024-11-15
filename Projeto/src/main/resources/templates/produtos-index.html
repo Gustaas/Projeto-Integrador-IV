@@ -32,6 +32,11 @@
         </div>
         <nav>
             <div class="imagem">
+                <div id="user-button" class="user-button" style="display: none;">
+                    <a th:href="@{/produtos/detalhesUser}">
+                        <img th:src="@{/img/user.png}" style="height: 50px;" alt=""></a>
+                </div>
+                <div style="margin-right: 10px;"></div>
                 <a th:href="@{/produtos/carrinho}">Carrinho</a>
                 <img th:src="@{/img/carrinho.png}" style="height: 50px;" alt="">
                 <span id="cart-count">0</span>
@@ -57,26 +62,39 @@
             <p><strong>Descrição:</strong> <span id="modal-product-description"></span></p>
             <p><strong>Preço:</strong> <span id="modal-product-price"></span></p>
             <p><strong>Avaliação:</strong> <span id="modal-product-rating"></span></p>
-
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const logoutButton = document.getElementById('logout-button');
+            const userButton = document.getElementById('user-button');
             const loginButton = document.querySelector('.login-button');
             const registerButton = document.querySelector('.register-button');
 
-            if (isUserLoggedIn()) {
-                logoutButton.style.display = 'inline-block';
-                loginButton.style.display = 'none';
-                registerButton.style.display = 'none';
-            } else {
-                logoutButton.style.display = 'none';
-                loginButton.style.display = 'inline-block';
-                registerButton.style.display = 'inline-block';
+            function isUserLoggedIn() {
+                return sessionStorage.getItem('usuarioLogado') !== null;
             }
 
+            // Exibe ou esconde os botões com base no estado do login
+            function updateLoginStatus() {
+                if (isUserLoggedIn()) {
+                    logoutButton.style.display = 'inline-block';
+                    userButton.style.display = 'inline-block';
+                    loginButton.style.display = 'none';
+                    registerButton.style.display = 'none';
+                } else {
+                    logoutButton.style.display = 'none';
+                    userButton.style.display = 'none';
+                    loginButton.style.display = 'inline-block';
+                    registerButton.style.display = 'inline-block';
+                }
+            }
+
+            // Inicializa o estado dos botões na primeira carga da página
+            updateLoginStatus();
+
+            // Adiciona o evento de logout
             logoutButton.addEventListener('click', function () {
                 fetch('/user/logout', {
                     method: 'POST',
@@ -86,19 +104,15 @@
                 })
                     .then(response => {
                         if (response.ok) {
-                            sessionStorage.removeItem('usuarioLogado');
-                            localStorage.removeItem('cart');
-                            window.location.href = '/produtos/listarProd';
+                            sessionStorage.removeItem('usuarioLogado'); // Remove usuário logado do sessionStorage
+                            localStorage.removeItem('cart'); // Limpa o carrinho
+                            window.location.href = '/produtos/listarProd'; // Redireciona para a lista de produtos
                         } else {
                             console.error('Erro ao fazer logout');
                         }
                     })
                     .catch(error => console.error('Erro ao desconectar:', error));
             });
-
-            function isUserLoggedIn() {
-                return sessionStorage.getItem('usuarioLogado') !== null;
-            }
         });
 
 

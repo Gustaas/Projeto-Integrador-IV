@@ -74,6 +74,11 @@ public class ProdutoController {
         return "produtos-index";
     }
 
+    @GetMapping("/detalhesUser")
+    public String detalesUser() {
+        return "detalhesCliente";
+    }
+
     @PutMapping("/alterar-status/{id}")
     public ResponseEntity<String> alterarStatusProduto(@PathVariable Long id, @RequestBody Map<String, Boolean> status) {
         Boolean ativo = status.get("ativo");

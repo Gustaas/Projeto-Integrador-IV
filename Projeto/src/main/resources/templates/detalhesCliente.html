@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informações do Cliente</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/detalhesCliente.css}">
+    <!-- Adicione o Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <header class="header">
+        <a th:href="@{/produtos/listarProd}" class="back-button">← Voltar para o Início</a>
+        <h1>Detalhes do Cliente</h1>
+    </header>
+
+    <div class="container">
+        <section class="cliente-section">
+            <h2>Informações do Cliente</h2>
+            <form id="form-cliente">
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome">
+                </div>
+
+                <div class="form-group">
+                    <label for="cpf">CPF:</label>
+                    <input type="text" id="cpf" name="cpf">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="dataNascimento">Data de Nascimento:</label>
+                    <input type="date" id="dataNascimento" name="dataNascimento">
+                </div>
+
+                <div class="form-group">
+                    <label for="genero">Gênero:</label>
+                    <select id="genero" name="genero">
+                        <option value="Masculino">Masculino</option>
+                        <option value="Feminino">Feminino</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
+                <button type="button" class="btn-update" id="update-cliente">Atualizar Cliente</button>
+            </form>
+        </section>
+
+        <section class="enderecos-section">
+            <h2>Endereços</h2>
+            <div id="enderecos-list">
+            </div>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAddressModal">
+                Adicionar Endereço
+            </button>
+        </section>
+    </div>
+
+    <!-- Modal de Adicionar Endereço -->
+    <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAddressModalLabel">Adicionar Novo Endereço</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addAddressForm">
+                        <div class="form-group">
+                            <label for="rua">Rua</label>
+                            <input type="text" class="form-control" id="rua" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="numero">Número</label>
+                            <input type="text" class="form-control" id="numero" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bairro">Bairro</label>
+                            <input type="text" class="form-control" id="bairro" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cidade">Cidade</label>
+                            <input type="text" class="form-control" id="cidade" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cep">CEP</label>
+                            <input type="text" class="form-control" id="cep" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <input type="text" class="form-control" id="estado" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pais">País</label>
+                            <input type="text" class="form-control" id="pais" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Adicionar Endereço</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!sessionStorage.getItem('usuarioLogado')) {
+                window.location.href = '/user/loginUser';
+            } else {
+                const userId = sessionStorage.getItem('userId');
+                loadClientInfo(userId);
+                loadClientAddresses(userId);
+            }
+        });
+
+        function loadClientInfo(userId) {
+            fetch(`/user/dados/${userId}`)
+                .then(response => response.json())
+                .then(cliente => {
+                    if (cliente) {
+                        document.getElementById('nome').value = cliente.nome;
+                        document.getElementById('cpf').value = cliente.cpf;
+                        document.getElementById('email').value = cliente.email;
+                        document.getElementById('dataNascimento').value = cliente.dataNascimento;
+                        document.getElementById('genero').value = cliente.genero;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar os dados do cliente:', error);
+                });
+        }
+
+        function loadClientAddresses(userId) {
+            fetch(`/user/enderecos/${userId}`)
+                .then(response => response.json())
+                .then(enderecos => {
+                    const enderecosList = document.getElementById('enderecos-list');
+                    enderecosList.innerHTML = '';
+
+                    enderecos.forEach(endereco => {
+                        const rua = endereco.logradouro || 'Rua não informada';
+                        const numero = endereco.numero || 'Número não informado';
+                        const bairro = endereco.bairro || 'Bairro não informado';
+                        const cidade = endereco.cidade || 'Cidade não informada';
+                        const cep = endereco.cep || 'CEP não informado';
+                        const pais = endereco.pais || 'Brasil';
+                        const principalTexto = endereco.principal ? '<strong>(Principal)</strong>' : '';
+
+                        const enderecoElement = document.createElement('div');
+                        enderecoElement.innerHTML = `
+                            <p>${rua}, ${numero} - ${bairro} - ${cidade} - ${cep} - ${pais} ${principalTexto}</p>
+                            ${endereco.principal ? '' : `<button class="btn btn-info" onclick="setPrincipal(${endereco.id})">Definir como Principal</button>`}
+                        `;
+                        enderecosList.appendChild(enderecoElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar os endereços:', error);
+                });
+        }
+
+        function setPrincipal(enderecoId) {
+            const userId = sessionStorage.getItem('userId');
+            fetch(`/user/enderecos/principal/${userId}/${enderecoId}`, {
+                method: 'PUT',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        loadClientAddresses(userId);
+                        alert("Endereço definido como principal com sucesso!");
+                    } else {
+                        console.error('Erro ao definir como principal');
+                    }
+                })
+        }
+
+        document.getElementById('addAddressForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const userId = sessionStorage.getItem('userId');
+            const novoEndereco = {
+                logradouro: document.getElementById('rua').value,
+                numero: document.getElementById('numero').value,
+                bairro: document.getElementById('bairro').value,
+                cidade: document.getElementById('cidade').value,
+                cep: document.getElementById('cep').value,
+                estado: document.getElementById('estado').value,
+                uf: document.getElementById('estado').value,
+                clienteId: userId,
+                pais: 'Brasil',
+                principal: false
+            };
+
+            fetch(`/user/endereco/adicionar/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(novoEndereco)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        alert('Endereço adicionado com sucesso!');
+                        $('#addAddressModal').modal('hide');
+                        loadClientAddresses(userId);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao adicionar o endereço:', error);
+                });
+        });
+
+
+        function buscarEnderecoPorCep() {
+            const cep = document.getElementById('cep').value.replace(/\D/g, '');
+
+            if (cep.length === 8) {
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.erro) {
+                            alert('CEP não encontrado.');
+                        } else {
+                            document.getElementById('rua').value = data.logradouro;
+                            document.getElementById('bairro').value = data.bairro;
+                            document.getElementById('cidade').value = data.localidade;
+                            document.getElementById('estado').value = data.uf;
+                            document.getElementById('pais').value = 'Brasil';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar CEP:', error);
+                        alert('Erro ao buscar o CEP.');
+                    });
+            } else {
+                alert('CEP inválido.');
+            }
+        }
+
+        document.getElementById('cep').addEventListener('blur', buscarEnderecoPorCep);
+    </script>
+</body>
+
+</html>

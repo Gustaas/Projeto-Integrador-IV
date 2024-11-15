@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout de Compra</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/checkout.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .cliente-section input,
+        .cliente-section select {
+            width: 100%;
+            height: 50px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .order-summary {
+            margin-top: 20px;
+        }
+
+        .frete-options {
+            margin-top: 20px;
+        }
+
+        .total-price {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 20px 0px
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a th:href="@{/produtos/listarProd}" class="back-button">← Voltar para o Início</a>
+        <h1>Checkout de Compra</h1>
+    </header>
+
+    <div class="container">
+
+        <section class="checkout-section">
+            <div class="col-md-6">
+                <h3>Detalhes do Pedido</h3>
+                <ul id="order-summary">
+                    <li><strong>Produto 1:</strong> Nome do Produto 1 - R$ 99,90</li>
+                    <li><strong>Produto 2:</strong> Nome do Produto 2 - R$ 79,90</li>
+                    <li><strong>Total:</strong> R$ 179,80</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h3>Forma de Pagamento</h3>
+                <form id="payment-form">
+                    <div class="form-group">
+                        <label for="payment-method">Escolha a forma de pagamento:</label>
+                        <select id="payment-method" class="form-control" required>
+                            <option value="cartaoCredito">Cartão de Crédito</option>
+                            <option value="boleto">Boleto Bancário</option>
+                            <option value="paypal">PayPal</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <section class="enderecos-section">
+            <h2>Meus Endereços</h2>
+            <div id="enderecos-list">
+            </div>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEnderecoModal">Adicionar
+                Endereço</button>
+            <div class="frete-options">
+                <h4>Opções de Frete:</h4>
+                <div class="frete-option">
+                    <label>
+                        <input type="radio" name="frete" value="15.00" onclick="updateTotal(this)"> SEDEX: R$ 15,00
+                    </label>
+                </div>
+                <div class="frete-option">
+                    <label>
+                        <input type="radio" name="frete" value="10.00" onclick="updateTotal(this)"> PAC: R$ 10,00
+                    </label>
+                </div>
+                <div class="frete-option">
+                    <label>
+                        <input type="radio" name="frete" value="0.00" onclick="updateTotal(this)"> Retirar na loja: Frete Grátis!
+                    </label>
+                </div>
+            </div>
+
+        </section>
+        <div class="total-price">
+            Total a pagar: R$ <span id="total-price">179,80</span>
+        </div>
+        <button type="button" class="btn btn-success" id="finalize-purchase">Finalizar Compra</button>
+    </div>
+
+    <div class="modal fade" id="addEnderecoModal" tabindex="-1" role="dialog" aria-labelledby="addEnderecoModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEnderecoModalLabel">Adicionar Novo Endereço</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addEnderecoForm">
+                        <div class="form-group">
+                            <label for="logradouro">Rua</label>
+                            <input type="text" class="form-control" id="logradouro" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="numero">Número</label>
+                            <input type="text" class="form-control" id="numero" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bairro">Bairro</label>
+                            <input type="text" class="form-control" id="bairro" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cidade">Cidade</label>
+                            <input type="text" class="form-control" id="cidade" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cep">CEP</label>
+                            <input type="text" class="form-control" id="cep" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <input type="text" class="form-control" id="estado" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pais">País</label>
+                            <input type="text" class="form-control" id="pais" value="Brasil" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-endereco">Salvar Endereço</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        function updateTotal(freteOption) {
+            const freteValue = parseFloat(freteOption.value);
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let total = 0;
+
+            cart.forEach(item => {
+                const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
+                total += priceValue * item.quantity;
+            });
+
+            total += freteValue;
+
+            const totalPriceContainer = document.getElementById('total-price');
+            totalPriceContainer.textContent = `R$ ${total.toFixed(2)}`;
+        }
+
+
+        function loadClientInfo(userId) {
+            fetch(`/user/dados/${userId}`)
+                .then(response => response.json())
+                .then(cliente => {
+                    if (cliente) {
+                        document.getElementById('nome').value = cliente.nome;
+                        document.getElementById('cpf').value = cliente.cpf;
+                        document.getElementById('email').value = cliente.email;
+                        document.getElementById('dataNascimento').value = cliente.dataNascimento;
+                        document.getElementById('genero').value = cliente.genero;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar os dados do cliente:', error);
+                });
+        }
+
+        function loadClientAddresses(userId) {
+            fetch(`/user/enderecos/${userId}`)
+                .then(response => response.json())
+                .then(enderecos => {
+                    const enderecosList = document.getElementById('enderecos-list');
+                    enderecosList.innerHTML = '';
+
+                    enderecos.forEach(endereco => {
+                        const rua = endereco.logradouro || 'Rua não informada';
+                        const numero = endereco.numero || 'Número não informado';
+                        const bairro = endereco.bairro || 'Bairro não informado';
+                        const cidade = endereco.cidade || 'Cidade não informada';
+                        const cep = endereco.cep || 'CEP não informado';
+                        const pais = endereco.pais || 'Brasil';
+                        const principalTexto = endereco.principal ? '<strong>(Principal)</strong>' : '';
+
+                        const enderecoElement = document.createElement('div');
+                        enderecoElement.innerHTML = ` 
+                        <div>
+                            <label>
+                                <input type="radio" name="endereco" value="${endereco.id}" ${endereco.principal ? 'checked' : ''}>
+                                ${rua}, ${numero} - ${bairro} - ${cidade} - ${cep} - ${pais} ${principalTexto}
+                            </label>
+                        </div>
+                    `;
+                        enderecosList.appendChild(enderecoElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar os endereços:', error);
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('save-endereco').addEventListener('click', function () {
+                const userId = sessionStorage.getItem('userId');
+                const novoEndereco = {
+                    logradouro: document.getElementById('logradouro').value,
+                    numero: document.getElementById('numero').value,
+                    bairro: document.getElementById('bairro').value,
+                    cidade: document.getElementById('cidade').value,
+                    cep: document.getElementById('cep').value,
+                    estado: document.getElementById('estado').value,
+                    uf: document.getElementById('estado').value,
+                    clienteId: userId,
+                    pais: 'Brasil',
+                    principal: false
+                };
+
+                fetch(`/user/endereco/adicionar/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(novoEndereco)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data) {
+                            alert('Endereço adicionado com sucesso!');
+                            $('#addEnderecoModal').modal('hide');
+                            loadClientAddresses(userId);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao adicionar o endereço:', error);
+                    });
+            });
+        });
+
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const cepInput = document.getElementById('cep');
+            cepInput.addEventListener('blur', function () {
+                const cep = cepInput.value.replace(/\D/g, '');
+
+                if (cep.length === 8) {
+                    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.erro) {
+                                document.getElementById('logradouro').value = data.logradouro || '';
+                                document.getElementById('bairro').value = data.bairro || '';
+                                document.getElementById('cidade').value = data.localidade || '';
+                                document.getElementById('estado').value = data.uf || '';
+                                document.getElementById('pais').value = 'Brasil';
+                            } else {
+                                alert('CEP não encontrado.');
+                            }
+                        })
+                        .catch(error => {
+                            alert('Erro ao buscar o CEP.');
+                            console.error(error);
+                        });
+                } else {
+                    alert('CEP inválido. Por favor, insira um CEP com 8 dígitos.');
+                }
+            });
+        });
+
+        function displayOrderSummary() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const orderSummaryContainer = document.getElementById('order-summary');
+            let total = 0;
+            orderSummaryContainer.innerHTML = '';
+            if (cart.length === 0) {
+                orderSummaryContainer.innerHTML = '<li>O carrinho está vazio.</li>';
+                return;
+            }
+
+            cart.forEach(item => {
+                const itemSummary = document.createElement('li');
+                itemSummary.classList.add('order-item');
+
+                itemSummary.innerHTML = `
+            <div class="order-item-details">
+                <img src="${item.image}" alt="${item.name}" class="order-item-image">
+                <div>
+                    <strong>${item.name}</strong><br>
+                    Preço Unitário: R$ ${item.price} <br>
+                    Quantidade: ${item.quantity}
+                </div>
+            </div>
+        `;
+                orderSummaryContainer.appendChild(itemSummary);
+
+                const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
+                total += priceValue * item.quantity;
+            });
+
+            const totalPriceContainer = document.getElementById('total-price');
+            totalPriceContainer.textContent = `R$ ${total.toFixed(2)}`;
+
+            updateTotal({ value: 0 }); 
+        }
+        displayOrderSummary();
+    </script>
+</body>
+
+</html>
