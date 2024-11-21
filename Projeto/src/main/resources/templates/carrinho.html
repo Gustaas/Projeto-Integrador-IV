@@ -221,7 +221,6 @@
         padding: 10px;
         border-radius: 5px;
         display: none;
-        /* Inicialmente oculto */
     }
 
     .address-info p {
@@ -302,7 +301,6 @@
                 <label for="parcelamento">Parcelamento:</label>
                 <input type="text" id="parcelamento" value="Até 10x sem juros" disabled>
 
-                <!-- Seção para exibir o endereço -->
                 <div class="address-info" id="address-info">
                     <h4>Endereço:</h4>
                     <p id="address"></p>
@@ -316,15 +314,12 @@
     <script>
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-        // Função para exibir os itens do carrinho
         function displayCart() {
             const cartItemsContainer = document.getElementById('cart-items');
             const totalPriceContainer = document.getElementById('total-price');
 
-            // Limpa os itens do carrinho exibidos
             cartItemsContainer.innerHTML = '';
 
-            // Verifica se o carrinho está vazio
             if (cart.length === 0) {
                 cartItemsContainer.innerHTML = '<p>O carrinho está vazio.</p>';
                 totalPriceContainer.textContent = '0.00';
@@ -332,8 +327,6 @@
             }
 
             let total = 0;
-
-            // Loop pelos itens do carrinho
             cart.forEach(item => {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('cart-item');
@@ -349,12 +342,11 @@
                 </div>
             `;
                 cartItemsContainer.appendChild(itemDiv);
-                // Adiciona o preço ao total
                 const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
-                total += priceValue * item.quantity; // Corrige o cálculo do total
+                total += priceValue * item.quantity;
             });
 
-            totalPriceContainer.textContent = total.toFixed(2); // Atualiza o total na tela
+            totalPriceContainer.textContent = total.toFixed(2);
         }
 
 
@@ -401,26 +393,26 @@
             const addressInfo = document.getElementById('address-info');
             const address = document.getElementById('address');
 
-            if (cep.length === 8) { // Verifica se o CEP tem 8 dígitos
+            if (cep.length === 8) {
                 fetch(`https://viacep.com.br/ws/${cep}/json/`)
                     .then(response => response.json())
                     .then(data => {
                         if (!data.erro) {
                             address.textContent = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
-                            addressInfo.style.display = 'block'; // Exibe a seção de endereço
+                            addressInfo.style.display = 'block';
                         } else {
                             address.textContent = 'Endereço não encontrado.';
-                            addressInfo.style.display = 'block'; // Exibe a seção de endereço
+                            addressInfo.style.display = 'block';
                         }
                     })
                     .catch(error => {
                         console.error('Erro ao buscar o endereço:', error);
                         address.textContent = 'Erro ao buscar o endereço.';
-                        addressInfo.style.display = 'block'; // Exibe a seção de endereço
+                        addressInfo.style.display = 'block';
                     });
             } else {
                 address.textContent = '';
-                addressInfo.style.display = 'none'; // Oculta a seção se o CEP não for válido
+                addressInfo.style.display = 'none';
             }
         }
 
@@ -438,7 +430,7 @@
             if (cart.length === 0) {
                 alert('O carrinho está vazio! Adicione itens antes de prosseguir.');
             } else {
-                window.location.href = '/compra/checkout';
+                window.location.href = '/compra/pagamentos';
             }
         });
 

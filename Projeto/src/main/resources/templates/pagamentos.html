@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumo do Pedido e Pagamento</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #0056b3;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header .back-button {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .order-summary-container,
+        .payment-container {
+            margin: 20px auto;
+            max-width: 800px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-item {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item-image {
+            width: 80px;
+            height: 80px;
+            margin-right: 15px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .order-item-details {
+            display: flex;
+            align-items: center;
+        }
+
+        #total-price {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .cartao-fields {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="/produtos/listarProd" class="back-button">← Voltar para o Início</a>
+        <h1>Resumo do Pedido</h1>
+    </header>
+
+    <div class="order-summary-container">
+        <h2>Resumo do Pedido</h2>
+        <ul id="order-summary"></ul>
+        <div id="total-price">Total: R$ 0,00</div>
+    </div>
+
+    <div class="payment-container">
+        <h2>Formas de Pagamento</h2>
+        <form id="payment-form">
+            <div class="form-group">
+                <label for="payment-method">Escolha uma forma de pagamento:</label>
+                <select id="payment-method" class="form-control" required>
+                    <option value="">Selecione</option>
+                    <option value="cartaoCredito">Cartão de Crédito</option>
+                    <option value="cartaoDebito">Cartão de Débito</option>
+                    <option value="boleto">Boleto Bancário</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="pix">PIX</option>
+                    <option value="transferencia">Transferência Bancária</option>
+                </select>
+            </div>
+
+            <!-- Campos do Cartão -->
+            <div id="cartao-fields" class="cartao-fields">
+                <div class="form-group">
+                    <label for="numero-cartao">Número do Cartão:</label>
+                    <input type="text" id="numero-cartao" class="form-control" placeholder="Digite o número do cartão">
+                </div>
+                <div class="form-group">
+                    <label for="nome-cartao">Nome Completo:</label>
+                    <input type="text" id="nome-cartao" class="form-control"
+                        placeholder="Digite o nome como está no cartão">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="data-vencimento">Data de Vencimento:</label>
+                        <input type="month" id="data-vencimento" class="form-control">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="codigo-verificador">Código Verificador:</label>
+                        <input type="text" id="codigo-verificador" class="form-control" placeholder="Ex: 123">
+                    </div>
+                </div>
+                <div id="parcelamento-container" class="form-group">
+                    <label for="parcelamento">Escolha o número de parcelas:</label>
+                    <select id="parcelamento" class="form-control"></select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-block" id="finalize-payment">Confirmar Pagamento</button>
+        </form>
+    </div>
+
+    <script>
+        function displayOrderSummary() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const orderSummaryContainer = document.getElementById('order-summary');
+            let total = 0;
+            orderSummaryContainer.innerHTML = '';
+            if (cart.length === 0) {
+                orderSummaryContainer.innerHTML = '<li>O carrinho está vazio.</li>';
+                return;
+            }
+
+            cart.forEach(item => {
+                const itemSummary = document.createElement('li');
+                itemSummary.classList.add('order-item');
+                itemSummary.innerHTML = `
+                    <div class="order-item-details">
+                        <img src="${item.image}" alt="${item.name}" class="order-item-image">
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            Preço Unitário: ${item.price} <br>
+                            Quantidade: ${item.quantity}
+                        </div>
+                    </div>
+                `;
+                orderSummaryContainer.appendChild(itemSummary);
+
+                const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
+                total += priceValue * item.quantity;
+            });
+
+            const totalPriceContainer = document.getElementById('total-price');
+            totalPriceContainer.textContent = `Total: R$ ${total.toFixed(2)}`;
+
+            updateParcelamentoOptions(total);
+        }
+
+        function updateParcelamentoOptions(total) {
+            const parcelamentoSelect = document.getElementById('parcelamento');
+            parcelamentoSelect.innerHTML = '';
+
+            for (let i = 1; i <= 10; i++) {
+                const valorParcela = (total / i).toFixed(2);
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `${i}x de R$ ${valorParcela} sem juros`;
+                parcelamentoSelect.appendChild(option);
+            }
+        }
+
+        document.getElementById('payment-method').addEventListener('change', function () {
+            const cartaoFields = document.getElementById('cartao-fields');
+            if (this.value === 'cartaoCredito') {
+                cartaoFields.style.display = 'block';
+                const total = parseFloat(document.getElementById('total-price').textContent.replace('Total: R$ ', '').replace(',', '.'));
+                updateParcelamentoOptions(total);
+            } else {
+                cartaoFields.style.display = 'none';
+            }
+        });
+
+        document.getElementById('payment-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const paymentMethod = document.getElementById('payment-method').value;
+            if (!paymentMethod) {
+                alert('Por favor, selecione uma forma de pagamento.');
+                return;
+            }
+
+            const parcelas = paymentMethod === 'cartaoCredito' ? document.getElementById('parcelamento').value : '1';
+            const pagamentoData = {
+                metodo: paymentMethod,
+                parcelas: parcelas
+            };
+
+            sessionStorage.setItem('pagamento', JSON.stringify(pagamentoData));
+            window.location.href = '/compra/checkout';
+        });
+
+        displayOrderSummary();
+    </script>
+</body>
+
+</html>

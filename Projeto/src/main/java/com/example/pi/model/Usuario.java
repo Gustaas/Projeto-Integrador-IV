@@ -9,7 +9,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "tb_clientes")
 public class Usuario {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,7 +19,6 @@ public class Usuario {
     private Integer tipo = 1;
     private Boolean ativo = true;
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }

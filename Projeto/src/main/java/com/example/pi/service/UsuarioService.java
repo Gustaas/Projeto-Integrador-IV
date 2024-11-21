@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import com.example.pi.repository.UsuarioRepository;
 @Service
 public class UsuarioService {
 
+    @Autowired
     private UsuarioRepository repository;
 
     private PasswordEncoder senhacript;
@@ -47,7 +49,7 @@ public class UsuarioService {
         Optional<Usuario> usuarioOpt = repository.findById(id);
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            usuario.setAtivo(ativo); // Ativando ou desativando o usuário
+            usuario.setAtivo(ativo);
             repository.save(usuario);
             return true;
         }
@@ -55,7 +57,7 @@ public class UsuarioService {
     }
 
     public boolean validarCPF(String cpf) {
-        final String cpfLocal = cpf.replaceAll("[^\\d]", ""); // Use uma variável final ou efetivamente final
+        final String cpfLocal = cpf.replaceAll("[^\\d]", "");
 
         if (cpfLocal.length() != 11 || cpfLocal.chars().allMatch(c -> c == cpfLocal.charAt(0))) {
             return false;

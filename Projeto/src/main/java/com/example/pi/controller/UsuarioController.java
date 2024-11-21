@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.pi.model.Produto;
 import com.example.pi.model.Usuario;
-import com.example.pi.repository.UsuarioRepository;
 import com.example.pi.service.ProdutoService;
 import com.example.pi.service.UsuarioService;
 
@@ -35,9 +33,6 @@ public class UsuarioController {
 
     @Autowired
     private ProdutoService produtoService;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
@@ -105,7 +100,6 @@ public class UsuarioController {
             return "buscarUsuarios";
         }
 
-        // Criptografar a senha com BCrypt
         Usuario usuario = new Usuario();
         usuario.setNome(nome);
         usuario.setCpf(cpf);
@@ -164,13 +158,6 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> getAllUsuarios() {
         List<Usuario> usuarios = usuarioService.getAllUsuarios();
         return ResponseEntity.ok(usuarios);
-    }
-
-    @GetMapping("/usuario/{id}")
-    @ResponseBody
-    public Usuario getUserById(@PathVariable Long id) {
-        Usuario usuario = usuarioService.findById(id);
-        return usuario != null ? usuario : new Usuario();
     }
 
     @PostMapping("/atualizarusuario")

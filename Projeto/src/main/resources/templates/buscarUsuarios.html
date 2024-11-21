@@ -266,7 +266,6 @@
                 .then(data => populateTable(data))
                 .catch(error => console.error('Erro ao buscar usuários:', error));
         }
-
         function toggleCadastroForm() {
             var cadastroContainer = document.getElementById("cadastroContainer");
             if (cadastroContainer.style.display === "none") {
@@ -326,14 +325,14 @@
             users.forEach(user => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-            <td>${user.id}</td>
-            <td>${user.nome}</td>
-            <td>${user.email}</td>
-            <td>${user.ativo ? 'Ativo' : 'Inativo'}</td>
-            <td>${user.tipo}</td>
-            <td><button onclick="openModal(${user.id})">Alterar</button></td>
-            <td><button onclick="desabilitarUsuario(${user.id})">${user.ativo ? 'Desabilitar' : 'Habilitar'}</button></td>
-        `;
+                <td>${user.id}</td>
+                <td>${user.nome}</td>
+                <td>${user.email}</td>
+                <td>${user.ativo ? 'Ativo' : 'Inativo'}</td>
+                <td>${user.tipo}</td>
+                <td><button onclick="openModal(${user.id})">Alterar</button></td>
+                <td><button onclick="desabilitarUsuario(${user.id})">${user.ativo ? 'Desabilitar' : 'Habilitar'}</button></td>
+            `;
                 tableBody.appendChild(row);
             });
         }
@@ -351,7 +350,7 @@
                 .then(response => {
                     if (response.ok) {
                         alert(novoStatus ? "Usuário ativado com sucesso." : "Usuário desabilitado com sucesso.");
-                        fetchUsuarios(); // Atualizar a lista de usuários
+                        fetchUsuarios();
                     } else {
                         alert("Erro ao alterar o status do usuário.");
                     }

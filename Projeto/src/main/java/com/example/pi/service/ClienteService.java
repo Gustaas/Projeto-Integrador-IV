@@ -8,7 +8,6 @@ import com.example.pi.model.Cliente;
 import com.example.pi.model.Endereco;
 import com.example.pi.model.EnderecoDTO;
 import com.example.pi.repository.ClienteRepository;
-import com.example.pi.repository.EnderecoRepository;
 
 @Service
 public class ClienteService {
@@ -16,8 +15,6 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    @Autowired
-    private EnderecoRepository enderecoRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
