@@ -51,37 +51,30 @@ public class CompraService {
         compra.setFormaPagamento(compraDTO.getFormaPagamento());
         compra.setParcelas(compraDTO.getParcelas());
         compra.setValorParcelas(compraDTO.getValorParcelas());
-
         // Definir o cliente
         Cliente cliente = clienteRepository.findById(compraDTO.getIdCliente())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
         compra.setCliente(cliente);
-
         // Definir o endereço
         Endereco endereco = enderecoRepository.findById(compraDTO.getIdEndereco())
-                .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
+        .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
         compra.setEndereco(endereco);
-
         // Salvar a compra
         Compra compraSalva = compraRepository.save(compra);
-
         // Adicionar os itens da compra
         for (CompraItemDTO itemDTO : compraDTO.getItens()) {
             Produto produto = produtoRepository.findById(itemDTO.getIdProduto())
-                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
-
+            .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
             // Verificar a disponibilidade de estoque
             if (produto.getQtd() < itemDTO.getQuantidade()) {
                 throw new RuntimeException("Quantidade solicitada excede o estoque disponível");
             }
-
             CompraItem item = new CompraItem();
             item.setCompra(compraSalva);
             item.setProduto(produto);
             item.setQuantidade(itemDTO.getQuantidade());
             compraItemRepository.save(item);
         }
-
         return compraSalva;
     }
 

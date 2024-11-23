@@ -91,10 +91,8 @@
                 }
             }
 
-            // Inicializa o estado dos botões na primeira carga da página
             updateLoginStatus();
 
-            // Adiciona o evento de logout
             logoutButton.addEventListener('click', function () {
                 fetch('/user/logout', {
                     method: 'POST',
@@ -131,7 +129,7 @@
                             <h3>${produto.nomeProduto}</h3>
                             <p>Preço: R$ ${produto.preco.toFixed(2)}</p>
                             <a href="#" class="detail-button" data-product-id="${produto.id}">Detalhes</a>
-                            <button class="buy-button" onclick="addToCart('${produto.nomeProduto}', 'R$ ${produto.preco.toFixed(2)}', this, '${imageSrc}')">Comprar</button>
+                            <button class="buy-button" onclick="addToCart(${produto.id}, '${produto.nomeProduto}', 'R$ ${produto.preco.toFixed(2)}', this, '${imageSrc}')">Comprar</button>
                         `;
                         console.log('Imagem do produto:', imageSrc);
                         productList.appendChild(productCard);
@@ -223,42 +221,38 @@
             };
         });
 
-        function addToCart(name, price, button, imageSrc) {
-            // Verifica se a imagem não é undefined
+        function addToCart(id, name, price, button, imageSrc) {
             if (!imageSrc || imageSrc === "undefined") {
                 console.warn("Imagem não definida. Adicionando o item sem imagem.");
                 imageSrc = ""; // Ou defina um valor padrão
             }
             console.log('Imagem a ser adicionada:', imageSrc);
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const existingProduct = cart.find(item => item.name === name);
+            const existingProduct = cart.find(item => item.id === id);
 
             if (existingProduct) {
                 existingProduct.quantity += 1;
             } else {
                 cart.push({
+                    id: id, // Armazena o ID do produto
                     name: name,
                     price: price,
                     quantity: 1,
                     image: imageSrc
                 });
             }
-
-
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
             displayCart();
         }
 
 
-
-
         // Função para atualizar a contagem de itens no carrinho
         function updateCartCount() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const totalCount = cart.reduce((total, item) => total + item.quantity, 0); // Soma a quantidade de todos os itens
+            const totalCount = cart.reduce((total, item) => total + item.quantity, 0);
             const cartCountElement = document.getElementById('cart-count');
-            cartCountElement.textContent = totalCount; // Atualiza o texto do contador no carrinho
+            cartCountElement.textContent = totalCount;
         }
 
     </script>

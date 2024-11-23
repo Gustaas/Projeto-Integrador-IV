@@ -244,6 +244,63 @@
                 });
         }
 
+        document.getElementById("finalize-purchase").addEventListener("click", function () {
+            const idCliente = parseInt(sessionStorage.getItem("userId"));
+            const idEndereco = parseInt(document.querySelector("input[name='endereco']:checked").value);
+            const formaPagamento = document.getElementById("metodo-pagamento-display").textContent;
+            const tipoFrete = document.querySelector("input[name='frete']:checked").value || "Normal";
+            const parcelas = parseInt(document.getElementById("parcelas-display").textContent) || 1;
+
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const itens = cart.map(item => ({
+                idProduto: item.id,
+                quantidade: item.quantity,
+                preco: parseFloat(item.price.replace("R$ ", "").replace(",", "."))
+            }));
+
+            const valorTotal = itens.reduce((acc, item) => acc + (item.quantidade * item.preco), 0);
+            const valorParcelas = valorTotal / parcelas;
+
+            const numeroPedido = Math.floor(Math.random() * 1000000);
+
+            const status = "AGUARDANDO_PAGAMENTO";
+
+            // Objeto da compra
+            const compraData = {
+                idCliente,
+                idEndereco,
+                formaPagamento,
+                tipoFrete,
+                valorTotal,
+                numeroPedido,
+                parcelas,
+                valorParcelas,
+                status,
+                itens
+            };
+
+            fetch("/compra/finalizar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(compraData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(error => { throw error });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert("Compra finalizada com sucesso!");
+                    console.log("Resposta do servidor:", data);
+                })
+                .catch(error => {
+                    console.error("Erro ao finalizar a compra:", error);
+                    alert("Ocorreu um erro ao finalizar a compra. Verifique os dados e tente novamente.");
+                });
+        });
     </script>
 </body>
 

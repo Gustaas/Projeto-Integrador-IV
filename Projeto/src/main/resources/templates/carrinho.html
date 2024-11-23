@@ -434,22 +434,6 @@
             }
         });
 
-        document.getElementById('checkout-button').addEventListener('click', function () {
-            // Obtém os itens do carrinho armazenados no localStorage
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-            // Verifique se o carrinho não está vazio
-            if (cart.length === 0) {
-                alert("O carrinho está vazio!");
-                return;
-            } else if (!isUserLoggedIn()) {
-                alert('Por favor, efetue o login!');
-                window.location.href = '/user/loginUser';
-            } else {
-                window.location.href = `/compra/checkout?cart=${encodeURIComponent(JSON.stringify(cart))}`;
-            }
-        });
-
     </script>
 </body>
 
