@@ -355,7 +355,7 @@
 
             cart.forEach(item => {
                 const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
-                total += priceValue * item.quantity; 
+                total += priceValue * item.quantity;
             });
 
             priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
@@ -429,10 +429,17 @@
         document.getElementById('checkout-button').addEventListener('click', function () {
             if (cart.length === 0) {
                 alert('O carrinho está vazio! Adicione itens antes de prosseguir.');
-            } else {
+                window.location.href = '/produtos/listarProd';
+            }
+            else if (!isUserLoggedIn()) {
+                alert('Faça login para prosseguir!');
+                window.location.href = '/user/loginUser';
+            }
+            else {
                 window.location.href = '/compra/pagamentos';
             }
         });
+
 
     </script>
 </body>

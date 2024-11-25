@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.pi.model.Cliente;
 import com.example.pi.model.Compra;
+import com.example.pi.model.Compra.StatusCompra;
 import com.example.pi.model.CompraDTO;
 import com.example.pi.model.CompraItem;
 import com.example.pi.model.CompraItemDTO;
@@ -51,21 +52,16 @@ public class CompraService {
         compra.setFormaPagamento(compraDTO.getFormaPagamento());
         compra.setParcelas(compraDTO.getParcelas());
         compra.setValorParcelas(compraDTO.getValorParcelas());
-        // Definir o cliente
         Cliente cliente = clienteRepository.findById(compraDTO.getIdCliente())
-        .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
         compra.setCliente(cliente);
-        // Definir o endereço
         Endereco endereco = enderecoRepository.findById(compraDTO.getIdEndereco())
-        .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
         compra.setEndereco(endereco);
-        // Salvar a compra
         Compra compraSalva = compraRepository.save(compra);
-        // Adicionar os itens da compra
         for (CompraItemDTO itemDTO : compraDTO.getItens()) {
             Produto produto = produtoRepository.findById(itemDTO.getIdProduto())
-            .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
-            // Verificar a disponibilidade de estoque
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
             if (produto.getQtd() < itemDTO.getQuantidade()) {
                 throw new RuntimeException("Quantidade solicitada excede o estoque disponível");
             }
@@ -76,6 +72,10 @@ public class CompraService {
             compraItemRepository.save(item);
         }
         return compraSalva;
+    }
+
+    public void alterarStatus(Long idCompra, StatusCompra status) {
+        compraRepository.updateStatusById(idCompra, status);
     }
 
     public List<Produto> getProdutosCarrinho() {

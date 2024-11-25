@@ -3,9 +3,9 @@ package com.example.pi.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-
 public class CompraDTO {
 
+    private Long idCompra;
     private Long idCliente;
     private Long idEndereco;
     private String formaPagamento;
@@ -18,6 +18,14 @@ public class CompraDTO {
     private List<CompraItemDTO> itens;
 
     // Getters e Setters
+    public Long getIdCompra() {
+        return idCompra;
+    }
+
+    public void setIdCompra(Long idCompra) {
+        this.idCompra = idCompra;
+    }
+
     public Integer getNumeroPedido() {
         return numeroPedido;
     }
@@ -81,8 +89,6 @@ public class CompraDTO {
     public void setParcelas(Integer parcelas) {
         this.parcelas = parcelas;
     }
-
-
 
     public List<CompraItemDTO> getItens() {
         return itens;

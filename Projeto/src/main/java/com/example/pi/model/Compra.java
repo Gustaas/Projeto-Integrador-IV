@@ -45,6 +45,15 @@ public class Compra {
         public String getDescricao() {
             return descricao;
         }
+
+        public static StatusCompra fromDescricao(String descricao) {
+            for (StatusCompra status : StatusCompra.values()) {
+                if (status.getDescricao().equalsIgnoreCase(descricao)) {
+                    return status;
+                }
+            }
+            throw new IllegalArgumentException("Status inválido: " + descricao);
+        }
     }
 
     @Enumerated(EnumType.STRING)

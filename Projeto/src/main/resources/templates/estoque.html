@@ -14,10 +14,10 @@
         <a th:href="@{/lista}" class="back-button">← Voltar para o Início</a>
         <h1>Todos os Pedidos</h1>
     </header>
-
     <table class="table">
         <thead>
             <tr>
+                <th>ID da Compra</th>
                 <th>Numero Pedido</th>
                 <th>Data Pedido</th>
                 <th>Status</th>
@@ -25,9 +25,8 @@
                 <th>Forma de Pagamento</th>
                 <th>Parcelas</th>
                 <th>Valor Parcela</th>
-                <th>Produto</th>
+                <th>Produtos</th>
                 <th>Quantidade</th>
-                <th>Preço Unitário</th>
                 <th>Valor Total</th>
                 <th>Alterar Status</th>
             </tr>
@@ -36,32 +35,122 @@
         </tbody>
     </table>
 
+    <!-- Modal para Alterar Status -->
+    <div class="modal fade" id="modalAlterarStatus" tabindex="-1" role="dialog"
+        aria-labelledby="modalAlterarStatusLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAlterarStatusLabel">Alterar Status da Compra</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <select id="novoStatus" class="form-control">
+                        <option value="aguardando pagamento">Aguardando Pagamento</option>
+                        <option value="pagamento com sucesso">Pagamento com Sucesso</option>
+                        <option value="pagamento rejeitado">Pagamento Rejeitado</option>
+                        <option value="aguardando retirada">Aguardando Retirada</option>
+                        <option value="Eem transito">Em Trânsito</option>
+                        <option value="entregue">Entregue</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="alterarStatusCompra()">Alterar
+                        Status</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let idCompraAtual = null; // Armazenará o ID da compra a ser alterada
+
+        function formatarData(dataString) {
+            const data = new Date(dataString);
+            if (isNaN(data.getTime())) {
+                return "Data inválida";
+            }
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            const horas = String(data.getHours()).padStart(2, '0');
+            const minutos = String(data.getMinutes()).padStart(2, '0');
+            return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
+        }
+
+        function buscarProdutoPorId(idProduto) {
+            return fetch(`/produtos/${idProduto}`)
+                .then(response => response.json())
+                .then(produtoDetalhes => {
+                    if (!produtoDetalhes) {
+                        console.warn(`Produto com ID ${idProduto} não encontrado`);
+                        return { nomeProduto: "Produto não encontrado", precoUnitario: 0 };
+                    }
+                    return {
+                        nomeProduto: produtoDetalhes.nomeProduto || "Produto não encontrado",
+                        precoUnitario: produtoDetalhes.preco || 0
+                    };
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar produto:', error);
+                    return { nomeProduto: "Produto não encontrado", precoUnitario: 0 };
+                });
+        }
+
         function buscarCompras() {
             fetch('/compra/buscarCompras')
                 .then(response => response.json())
                 .then(compras => {
                     const tbody = document.getElementById('pedidos-tbody');
                     tbody.innerHTML = '';
+
+                    // Ordenar as compras pelo ID
+                    compras.sort((a, b) => a.idCompra - b.idCompra);
+
+                    const pedidosAgrupados = {};
                     compras.forEach(pedido => {
+                        const numeroPedido = pedido.numeroPedido;
+                        if (!pedidosAgrupados[numeroPedido]) {
+                            pedidosAgrupados[numeroPedido] = { ...pedido, itens: [] };
+                        }
                         pedido.itens.forEach(item => {
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td>${pedido.numeroPedido}</td>
-                                <td>${pedido.dataPedido}</td>
-                                <td>${pedido.status}</td>
-                                <td>${pedido.tipoFrete}</td>
-                                <td>${pedido.formaPagamento}</td>
-                                <td>${pedido.parcelas}</td>
-                                <td>${pedido.valorParcelas}</td>
-                                <td>${item.nomeProduto}</td>
-                                <td>${item.quantidade}</td>
-                                <td>${item.preco}</td>
-                                <td>${item.quantidade * item.preco}</td>
-                                <td><button onclick="abrirModalAlterarStatus(${pedido.id_compra}, '${pedido.status}')">Alterar Status</button></td>
-                            `;
-                            tbody.appendChild(tr);
+                            pedidosAgrupados[numeroPedido].itens.push(item);
                         });
+                    });
+
+                    Object.values(pedidosAgrupados).forEach(async pedido => {
+                        let produtos = '';
+                        let totalPedido = 0;
+                        let precoTotal = 0;
+
+                        for (let item of pedido.itens) {
+                            const { nomeProduto, precoUnitario } = await buscarProdutoPorId(item.idProduto);
+                            const valorTotalItem = precoUnitario * item.quantidade;
+
+                            produtos += `${nomeProduto} (R$ ${precoUnitario.toFixed(2)})<br>`;
+                            totalPedido += item.quantidade;
+                            precoTotal += valorTotalItem;
+                        }
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${pedido.idCompra}</td>
+                            <td>${pedido.numeroPedido}</td>
+                            <td>${formatarData(pedido.dataPedido || new Date())}</td>
+                            <td>${pedido.status}</td>
+                            <td>${pedido.tipoFrete}</td>
+                            <td>${pedido.formaPagamento}</td>
+                            <td>${pedido.parcelas}</td>
+                            <td>${pedido.valorParcelas}</td>
+                            <td>${produtos}</td>
+                            <td>${totalPedido}</td>
+                            <td>R$ ${precoTotal.toFixed(2)}</td>
+                            <td><button onclick="abrirModalAlterarStatus(${pedido.idCompra}, '${pedido.status}')">Alterar Status</button></td>
+                        `;
+                        tbody.appendChild(tr);
                     });
                 })
                 .catch(error => {
@@ -70,15 +159,47 @@
                 });
         }
 
-        // Função para abrir o modal de alteração de status (exemplo)
         function abrirModalAlterarStatus(idCompra, statusAtual) {
-            alert(`Abrindo modal para alteração de status da compra ${idCompra}. Status atual: ${statusAtual}`);
+            // Definir o valor do select conforme o status atual
+            document.getElementById('novoStatus').value = statusAtual;
+            idCompraAtual = idCompra;
+            $('#modalAlterarStatus').modal('show');
         }
 
-        // Chama a função buscarCompras ao carregar a página
+        function alterarStatusCompra() {
+            const novoStatus = document.getElementById('novoStatus').value;
+
+            fetch(`/compra/${idCompraAtual}/alterarStatus`, {
+                method: 'PUT', // ou 'PATCH', dependendo da sua API
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    novoStatus: novoStatus
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Status atualizado com sucesso!');
+                        $('#modalAlterarStatus').modal('hide');
+                        buscarCompras(); // Recarrega a lista de compras
+                    } else {
+                        alert('Erro ao atualizar o status!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao alterar o status:', error);
+                    alert('Erro ao alterar o status!');
+                });
+        }
+
         window.onload = buscarCompras;
     </script>
 
+    <!-- Inclua o JS do Bootstrap para o Modal -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
-</html>
+</html> 
