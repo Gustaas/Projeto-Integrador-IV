@@ -294,7 +294,7 @@
                 })
                 .then(data => {
                     alert("Compra finalizada com sucesso!");
-                    console.log("Resposta do servidor:", data);
+                    window.location.href = "/produtos/detalhesUser";
                 })
                 .catch(error => {
                     console.error("Erro ao finalizar a compra:", error);
