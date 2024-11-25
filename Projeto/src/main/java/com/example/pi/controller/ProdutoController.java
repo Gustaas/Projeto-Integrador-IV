@@ -230,4 +230,15 @@ public class ProdutoController {
         }
     }
 
+    @GetMapping("/buscarporid/{id}")
+    public Produto buscarProduto(@PathVariable Long id) {
+        Optional<Produto> produto = produtoService.buscarProdutoPorId(id);
+
+        if (produto.isPresent()) {
+            return produto.get();
+        } else {
+            throw new RuntimeException("Produto não encontrado");
+        }
+    }
+
 }

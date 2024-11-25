@@ -52,6 +52,11 @@ public class ClienteController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @GetMapping("/comprasUser")
+    public String comprasUsuario() {
+        return "pedidosUser";
+    }
+
     @GetMapping("/cadastroUser")
     public String endereco() {
         return "cadastroUser";

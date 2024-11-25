@@ -81,6 +81,7 @@ public class UsuarioController {
         return "buscarUsuarios";
     }
 
+
     @PostMapping("/cadastrar")
     public String cadastrarUsuario(
             @RequestParam("nome") String nome,

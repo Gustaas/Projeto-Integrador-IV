@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compras do Cliente</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/detalhesCliente.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <style>
+        .item-image {
+            width: 100px;
+            height: auto;
+            max-width: 100%;
+            margin-right: 10px;
+        }
+    </style>
+    <header class="header">
+        <a th:href="@{/produtos/listarProd}" class="back-button">← Voltar para o Início</a>
+        <h1>Histórico de Compras</h1>
+        <a th:href="@{/produtos/detalhesUser}" class="btn btn-primary">Minha Conta</a>
+    </header>
+
+    <div class="container">
+        <section class="compras-section">
+            <h2>Compras</h2>
+            <div id="compras-list" class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Número do Pedido</th>
+                            <th>Data</th>
+                            <th>Valor Total</th>
+                            <th>Status</th>
+                            <th>Forma de Pagamento</th>
+                            <th>Tipo de Frete</th>
+                            <th>Parcelas</th>
+                            <th>Valor das Parcelas</th>
+                            <th>Itens</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!sessionStorage.getItem('usuarioLogado')) {
+                window.location.href = '/user/loginUser';
+            } else {
+                const userId = sessionStorage.getItem('userId');
+                loadClientPurchases(userId);
+            }
+        });
+
+        function loadClientPurchases(userId) {
+            fetch(`/compra/buscarCompras/${userId}`)
+                .then(response => response.json())
+                .then(compras => {
+                    console.log('Resposta da API de compras:', compras);
+                    const comprasTableBody = document.querySelector('#compras-list tbody');
+                    comprasTableBody.innerHTML = '';
+
+                    const comprasPromises = compras.map(compra => {
+                        const dataPedido = new Date(compra.dataPedido).toLocaleDateString('pt-BR');
+
+                        const itensHtml = compra.itens.map(item => {
+                            if (item.idProduto) {
+                                return fetch(`/produtos/${item.idProduto}`)
+                                    .then(response => response.json())
+                                    .then(produtoDetalhes => {
+                                        console.log('Resposta da API de produto:', produtoDetalhes);
+
+                                        if (!produtoDetalhes || !produtoDetalhes.imagens || produtoDetalhes.imagens.length === 0) {
+                                            console.warn(`Produto com ID ${item.idProduto} sem imagens ou dados incompletos`);
+                                            return '';
+                                        }
+
+                                        const imagemPrincipal = produtoDetalhes.imagens.find(img => img.principal);
+                                        const imageSrc = imagemPrincipal ? `../img/${imagemPrincipal.link}` : '../img/default-image.png';
+
+                                        // Corrigido para acessar nomeProduto
+                                        const nomeProduto = produtoDetalhes.nomeProduto || "Produto não encontrado";
+
+                                        return `
+                                    <li>
+                                        <img src="${imageSrc}" alt="Imagem do produto" class="item-image" />
+                                        <p>Produto: ${nomeProduto}</p>
+                                        <p>Quantidade: ${item.quantidade}</p>
+                                    </li>
+                                `;
+                                    })
+                                    .catch(error => {
+                                        console.error('Erro ao buscar produto:', error);
+                                        return '';
+                                    });
+                            } else {
+                                console.warn("Produto não encontrado ou dados incompletos para o item", item);
+                                return '';
+                            }
+                        });
+
+                        return Promise.all(itensHtml).then(itens => {
+                            return `
+                        <tr>
+                            <td>${compra.numeroPedido}</td>
+                            <td>${dataPedido}</td>
+                            <td>R$ ${compra.valorTotal.toFixed(2)}</td>
+                            <td>${compra.status}</td>
+                            <td>${compra.formaPagamento}</td>
+                            <td>R$ ${compra.tipoFrete}</td>
+                            <td>${compra.parcelas}</td>
+                            <td>R$ ${compra.valorParcelas.toFixed(2)}</td>
+                            <td><ul>${itens.join('')}</ul></td>
+                        </tr>
+                    `;
+                        });
+                    });
+
+                    Promise.all(comprasPromises)
+                        .then(comprasHtml => {
+                            comprasTableBody.innerHTML = comprasHtml.join('');
+                        })
+                        .catch(error => {
+                            console.error('Erro ao processar as compras:', error);
+                        });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar as compras:', error);
+                });
+        }
+
+
+
+    </script>
+</body>
+
+</html>

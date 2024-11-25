@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todos os Pedidos</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/estoque.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <header class="header">
+        <a th:href="@{/lista}" class="back-button">← Voltar para o Início</a>
+        <h1>Todos os Pedidos</h1>
+    </header>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Numero Pedido</th>
+                <th>Data Pedido</th>
+                <th>Status</th>
+                <th>Tipo de Frete</th>
+                <th>Forma de Pagamento</th>
+                <th>Parcelas</th>
+                <th>Valor Parcela</th>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Preço Unitário</th>
+                <th>Valor Total</th>
+                <th>Alterar Status</th>
+            </tr>
+        </thead>
+        <tbody id="pedidos-tbody">
+        </tbody>
+    </table>
+
+    <script>
+        function buscarCompras() {
+            fetch('/compra/buscarCompras')
+                .then(response => response.json())
+                .then(compras => {
+                    const tbody = document.getElementById('pedidos-tbody');
+                    tbody.innerHTML = '';
+                    compras.forEach(pedido => {
+                        pedido.itens.forEach(item => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${pedido.numeroPedido}</td>
+                                <td>${pedido.dataPedido}</td>
+                                <td>${pedido.status}</td>
+                                <td>${pedido.tipoFrete}</td>
+                                <td>${pedido.formaPagamento}</td>
+                                <td>${pedido.parcelas}</td>
+                                <td>${pedido.valorParcelas}</td>
+                                <td>${item.nomeProduto}</td>
+                                <td>${item.quantidade}</td>
+                                <td>${item.preco}</td>
+                                <td>${item.quantidade * item.preco}</td>
+                                <td><button onclick="abrirModalAlterarStatus(${pedido.id_compra}, '${pedido.status}')">Alterar Status</button></td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar compras:', error);
+                    alert('Erro ao carregar os pedidos.');
+                });
+        }
+
+        // Função para abrir o modal de alteração de status (exemplo)
+        function abrirModalAlterarStatus(idCompra, statusAtual) {
+            alert(`Abrindo modal para alteração de status da compra ${idCompra}. Status atual: ${statusAtual}`);
+        }
+
+        // Chama a função buscarCompras ao carregar a página
+        window.onload = buscarCompras;
+    </script>
+
+</body>
+
+</html>

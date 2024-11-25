@@ -60,4 +60,8 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
+    public Optional<Produto> buscarProdutoPorId(Long id) {
+        return produtoRepository.findById(id);
+    }
+
 }
