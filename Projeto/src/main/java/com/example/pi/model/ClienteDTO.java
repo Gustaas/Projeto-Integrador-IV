@@ -23,6 +23,10 @@ public class ClienteDTO {
         this.enderecos = enderecos;
     }
 
+
+    
+
+
     // Getters e setters
     public Long getId() {
         return id;

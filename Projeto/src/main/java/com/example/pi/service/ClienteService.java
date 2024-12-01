@@ -1,10 +1,13 @@
 package com.example.pi.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.pi.model.Cliente;
+import com.example.pi.model.ClienteUpdateDTO;
 import com.example.pi.model.Endereco;
 import com.example.pi.model.EnderecoDTO;
 import com.example.pi.repository.ClienteRepository;
@@ -14,7 +17,6 @@ public class ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
-
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -52,5 +54,30 @@ public class ClienteService {
 
     private boolean isSenhaCorreta(String senhaDigitada, String senhaArmazenada) {
         return passwordEncoder.matches(senhaDigitada, senhaArmazenada);
+    }
+
+    public Cliente atualizarCliente(Long id, ClienteUpdateDTO clienteUpdateDTO) {
+        Optional<Cliente> clienteOpt = clienteRepository.findById(id);
+        if (clienteOpt.isPresent()) {
+            Cliente cliente = clienteOpt.get();
+
+            // Atualizando os campos
+            if (clienteUpdateDTO.getNome() != null) {
+                cliente.setNome(clienteUpdateDTO.getNome());
+            }
+            if (clienteUpdateDTO.getEmail() != null) {
+                cliente.setEmail(clienteUpdateDTO.getEmail());
+            }
+            if (clienteUpdateDTO.getGenero() != null) {
+                cliente.setGenero(clienteUpdateDTO.getGenero());
+            }
+            if (clienteUpdateDTO.getSenha() != null) {
+                // Criptografando a senha antes de salvar
+                cliente.setSenha(passwordEncoder.encode(clienteUpdateDTO.getSenha()));
+            }
+
+            return clienteRepository.save(cliente);
+        }
+        return null;  // Caso o cliente não seja encontrado
     }
 }

@@ -51,6 +51,7 @@
                 </div>
 
                 <button type="button" class="btn-update" id="update-cliente">Atualizar Cliente</button>
+
             </form>
         </section>
 
@@ -130,10 +131,14 @@
                 .then(response => response.json())
                 .then(cliente => {
                     if (cliente) {
+                        // Formatando a data para o formato yyyy-MM-dd
+                        const dataNascimento = new Date(cliente.dataNascimento);
+                        const dataFormatada = dataNascimento.toISOString().split('T')[0];
+
                         document.getElementById('nome').value = cliente.nome;
                         document.getElementById('cpf').value = cliente.cpf;
                         document.getElementById('email').value = cliente.email;
-                        document.getElementById('dataNascimento').value = cliente.dataNascimento;
+                        document.getElementById('dataNascimento').value = dataFormatada;
                         document.getElementById('genero').value = cliente.genero;
                     }
                 })
@@ -141,6 +146,7 @@
                     console.error('Erro ao carregar os dados do cliente:', error);
                 });
         }
+
 
         function loadClientAddresses(userId) {
             fetch(`/user/enderecos/${userId}`)
@@ -251,6 +257,38 @@
         }
 
         document.getElementById('cep').addEventListener('blur', buscarEnderecoPorCep);
+
+        document.getElementById('update-cliente').addEventListener('click', function () {
+            const userId = sessionStorage.getItem('userId'); // Pega o ID do usuário logado da sessão
+            const updatedCliente = {
+                nome: document.getElementById('nome').value,
+                cpf: document.getElementById('cpf').value,
+                email: document.getElementById('email').value,
+                dataNascimento: document.getElementById('dataNascimento').value, // Formato: yyyy-MM-dd
+                genero: document.getElementById('genero').value
+            };
+
+            fetch(`/user/alterar/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedCliente)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        alert('Informações do cliente atualizadas com sucesso!');
+                        // Recarrega as informações do cliente atualizadas na página
+                        loadClientInfo(userId);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao atualizar os dados do cliente:', error);
+                    alert('Ocorreu um erro ao atualizar os dados do cliente.');
+                });
+        });
+
     </script>
 </body>
 

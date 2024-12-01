@@ -141,6 +141,42 @@
         </div>
     </div>
 
+    <!-- Modal de confirmação da compra -->
+    <div class="modal fade" id="confirmacaoModal" tabindex="-1" role="dialog" aria-labelledby="confirmacaoModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmacaoModalLabel">Confirme sua Compra</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h4>Resumo da Compra</h4>
+                    <div id="order-summary-confirmation">
+                        <!-- Detalhes do pedido (nome, preço, quantidade) irão aqui -->
+                    </div>
+                    <div>
+                        <h5>Imagem do Pedido</h5>
+                        <img id="confirmar-imagem" src="" alt="Imagem do Pedido" class="img-fluid">
+                    </div>
+                    <p><strong>Forma de Pagamento:</strong> <span id="confirm-metodo-pagamento"></span></p>
+                    <p><strong>Parcelas:</strong> <span id="confirm-parcelas"></span></p>
+                    <p><strong>Endereço de Entrega:</strong> <span id="confirm-endereco"></span></p>
+                    <p><strong>Frete:</strong> <span id="confirm-frete"></span></p>
+                    <p><strong>Total a Pagar:</strong> R$ <span id="confirm-total-price"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirm-purchase">Confirmar Compra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
@@ -245,13 +281,15 @@
         }
 
         document.getElementById("finalize-purchase").addEventListener("click", function () {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
             const idCliente = parseInt(sessionStorage.getItem("userId"));
             const idEndereco = parseInt(document.querySelector("input[name='endereco']:checked").value);
             const formaPagamento = document.getElementById("metodo-pagamento-display").textContent;
             const tipoFrete = document.querySelector("input[name='frete']:checked").value || "Normal";
             const parcelas = parseInt(document.getElementById("parcelas-display").textContent) || 1;
+            const imagemProduto = cart.length > 0 ? cart[0].image : '/path/to/your/placeholder-image.jpg';
+            document.getElementById("confirmar-imagem").src = imagemProduto;
 
-            const cart = JSON.parse(localStorage.getItem("cart")) || [];
             const itens = cart.map(item => ({
                 idProduto: item.id,
                 quantidade: item.quantity,
@@ -261,46 +299,55 @@
             const valorTotal = itens.reduce((acc, item) => acc + (item.quantidade * item.preco), 0);
             const valorParcelas = valorTotal / parcelas;
 
-            const numeroPedido = Math.floor(Math.random() * 1000000);
+            // Preencher os dados no modal de confirmação
+            document.getElementById('confirm-metodo-pagamento').textContent = formaPagamento || 'Não especificado';
+            document.getElementById('confirm-parcelas').textContent = parcelas || 'Não especificado';
+            document.getElementById('confirm-endereco').textContent = document.querySelector("input[name='endereco']:checked").parentElement.textContent.trim();
+            document.getElementById('confirm-frete').textContent = tipoFrete === '0.00' ? 'Retirar na loja: Frete Grátis!' : `Frete: R$ ${tipoFrete}`;
+            document.getElementById('confirm-total-price').textContent = valorTotal.toFixed(2);
 
-            const status = "AGUARDANDO_PAGAMENTO";
+            // Mostrar o modal de confirmação
+            $('#confirmacaoModal').modal('show');
 
-            // Objeto da compra
-            const compraData = {
-                idCliente,
-                idEndereco,
-                formaPagamento,
-                tipoFrete,
-                valorTotal,
-                numeroPedido,
-                parcelas,
-                valorParcelas,
-                status,
-                itens
-            };
+            // Ao confirmar, enviar os dados para a API
+            document.getElementById("confirm-purchase").addEventListener("click", function () {
+                const compraData = {
+                    idCliente,
+                    idEndereco,
+                    formaPagamento,
+                    tipoFrete,
+                    valorTotal,
+                    numeroPedido: Math.floor(Math.random() * 1000000),
+                    parcelas,
+                    valorParcelas,
+                    status: "AGUARDANDO_PAGAMENTO",
+                    itens
+                };
 
-            fetch("/compra/finalizar", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(compraData)
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(error => { throw error });
-                    }
-                    return response.json();
+                fetch("/compra/finalizar", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(compraData)
                 })
-                .then(data => {
-                    alert("Compra finalizada com sucesso!");
-                    window.location.href = "/produtos/detalhesUser";
-                })
-                .catch(error => {
-                    console.error("Erro ao finalizar a compra:", error);
-                    alert("Ocorreu um erro ao finalizar a compra. Verifique os dados e tente novamente.");
-                });
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(error => { throw error });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert("Compra finalizada com sucesso!");
+                        window.location.href = "/produtos/detalhesUser";
+                    })
+                    .catch(error => {
+                        console.error("Erro ao finalizar a compra:", error);
+                        alert("Ocorreu um erro ao finalizar a compra. Verifique os dados e tente novamente.");
+                    });
+            });
         });
+
     </script>
 </body>
 

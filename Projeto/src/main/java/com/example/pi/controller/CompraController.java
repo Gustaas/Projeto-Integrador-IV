@@ -1,5 +1,6 @@
 package com.example.pi.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,6 +19,8 @@ import com.example.pi.model.Compra;
 import com.example.pi.model.Compra.StatusCompra;
 import com.example.pi.model.CompraDTO;
 import com.example.pi.model.CompraItemDTO;
+import com.example.pi.model.Endereco;
+import com.example.pi.model.EnderecoDTO;
 import com.example.pi.repository.CompraRepository;
 import com.example.pi.service.CompraService;
 import com.example.pi.service.ImagemService;
@@ -61,6 +64,7 @@ public class CompraController {
         // Converter lista de `Compra` para lista de `CompraDTO`
         List<CompraDTO> comprasDTO = compras.stream().map(compra -> {
             CompraDTO compraDTO = new CompraDTO();
+            compraDTO.setIdCompra(compra.getId());
             compraDTO.setNumeroPedido(compra.getNumeroPedido());
             compraDTO.setValorTotal(compra.getValorTotal());
             compraDTO.setStatus(compra.getStatus().getDescricao());
@@ -70,6 +74,27 @@ public class CompraController {
             compraDTO.setFormaPagamento(compra.getFormaPagamento());
             compraDTO.setParcelas(compra.getParcelas());
             compraDTO.setValorParcelas(compra.getValorParcelas());
+
+            // Adicionar o mapeamento da data
+            if (compra.getDataPedido() != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                String formattedDate = sdf.format(compra.getDataPedido());
+                compraDTO.setDataPedido(formattedDate);
+            }
+
+            // Criar EnderecoDTO
+            Endereco endereco = compra.getEndereco();
+            EnderecoDTO enderecoDTO = new EnderecoDTO();
+            enderecoDTO.setId(endereco.getId());
+            enderecoDTO.setBairro(endereco.getBairro());
+            enderecoDTO.setCep(endereco.getCep());
+            enderecoDTO.setCidade(endereco.getCidade());
+            enderecoDTO.setComplemento(endereco.getComplemento());
+            enderecoDTO.setLogradouro(endereco.getLogradouro());
+            enderecoDTO.setNumero(endereco.getNumero());
+            enderecoDTO.setUf(endereco.getUf());
+
+            compraDTO.setEndereco(enderecoDTO);
 
             // Mapear os itens
             List<CompraItemDTO> itensDTO = compra.getItens().stream()
@@ -104,6 +129,11 @@ public class CompraController {
             compraDTO.setStatus(compra.getStatus().getDescricao());
             compraDTO.setIdCliente(compra.getCliente().getId());
             compraDTO.setIdEndereco(compra.getEndereco().getId());
+            if (compra.getDataPedido() != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                String formattedDate = sdf.format(compra.getDataPedido());
+                compraDTO.setDataPedido(formattedDate);
+            }
 
             String tipoFrete = compra.getTipoFrete();
             if (tipoFrete != null && !tipoFrete.isEmpty()) {

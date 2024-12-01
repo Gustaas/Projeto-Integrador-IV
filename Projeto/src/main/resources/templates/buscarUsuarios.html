@@ -189,13 +189,14 @@
             </form>
         </div>
     </header>
+
     <div class="listing-container">
         <button id="showCadastroButton" class="button-custom" onclick="toggleCadastroForm()">Cadastrar Novo
             Usuário</button>
 
         <div class="cadastro-container" id="cadastroContainer" style="display: none;">
             <h1>Cadastro De Usuário</h1>
-            <form id="cadastro" action="/cadastrar" method="post" onsubmit="return validarCadastro()">
+            <form id="cadastroForm" onsubmit="return cadastrarUsuario(event)">
                 <label for="nome">Nome:</label>
                 <input type="text" id="nome" name="nome" required>
                 <label for="cpf">CPF:</label>
@@ -204,23 +205,18 @@
                 <input type="email" id="email" name="email" required>
                 <label for="senha">Senha:</label>
                 <input type="password" id="senha" name="senha" required>
-                <label for="password">Confirmar Senha:</label>
+                <label for="senhaC">Confirmar Senha:</label>
                 <input type="password" id="senhaC" name="ConfirmPassword" placeholder="Confirmar Senha" required>
                 <div class="button-group">
                     <button type="submit" class="button-custom">Confirmar</button>
                 </div>
                 <div id="error-message" style="color: red;">
-                    <p th:text="${erro}"></p>
+                    <p id="erroMessage"></p>
                 </div>
             </form>
         </div>
 
         <h1>Lista de Usuários</h1>
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Pesquisar usuário...">
-            <button class="button-custom" onclick="fetchUsuarios()">Procurar</button>
-        </div>
-
         <div id="userTableContainer">
             <table class="user-table" id="userTable">
                 <thead>
@@ -236,7 +232,6 @@
                 </thead>
                 <tbody id="tabelaUsuarios">
                 </tbody>
-
             </table>
         </div>
     </div>
@@ -266,6 +261,7 @@
                 .then(data => populateTable(data))
                 .catch(error => console.error('Erro ao buscar usuários:', error));
         }
+
         function toggleCadastroForm() {
             var cadastroContainer = document.getElementById("cadastroContainer");
             if (cadastroContainer.style.display === "none") {
@@ -318,6 +314,48 @@
             return true;
         }
 
+        function cadastrarUsuario(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById('nome').value;
+            const cpf = document.getElementById('cpf').value;
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+
+            // Tipo fixo para 1
+            const tipo = 1;
+
+            const data = {
+                nome: nome,
+                cpf: cpf,
+                email: email,
+                senha: senha,
+                tipo: tipo, // Tipo fixo para 1
+                genero: "Masculino", // Você pode personalizar conforme necessário
+                dataNascimento: "1990-01-01T00:00:00", // Defina uma data de nascimento fixa ou deixe o usuário informar
+                enderecos: [] // Adicione endereços se necessário
+            };
+
+            fetch('http://localhost:8080/user/cadastrar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Usuário cadastrado com sucesso!');
+                    fetchUsuarios(); // Atualiza a lista de usuários
+                    toggleCadastroForm(); // Fecha o formulário de cadastro
+                })
+                .catch((error) => {
+                    document.getElementById('erroMessage').textContent = "Erro ao cadastrar usuário.";
+                    console.error('Erro:', error);
+                });
+        }
+
+
         function populateTable(users) {
             const tableBody = document.getElementById('tabelaUsuarios');
             tableBody.innerHTML = '';
@@ -330,7 +368,7 @@
                 <td>${user.email}</td>
                 <td>${user.ativo ? 'Ativo' : 'Inativo'}</td>
                 <td>${user.tipo}</td>
-                <td><button onclick="openModal(${user.id})">Alterar</button></td>
+                <td><button onclick="openModal(${user.id}, '${user.nome}', '${user.email}', ${user.tipo}, ${user.ativo})">Alterar</button></td>
                 <td><button onclick="desabilitarUsuario(${user.id})">${user.ativo ? 'Desabilitar' : 'Habilitar'}</button></td>
             `;
                 tableBody.appendChild(row);
@@ -358,51 +396,56 @@
                 .catch(error => console.error("Erro na requisição:", error));
         }
 
-
-        function openModal(id) {
-            fetch(`/usuario/${id}`)
-                .then(response => response.json())
-                .then(user => {
-                    document.getElementById('userId').value = user.id;
-                    document.getElementById('userNome').value = user.nome;
-                    document.getElementById('userEmail').value = user.email;
-                    document.getElementById('userTipo').value = user.tipo;
-                    document.getElementById('myModal').style.display = 'block';
-                })
-                .catch(error => console.error('Erro ao carregar dados do usuário:', error));
+        function openModal(id, nome, email, tipo, ativo) {
+            // Preenche os campos do formulário com os dados do usuário
+            document.getElementById('userId').value = id;
+            document.getElementById('userNome').value = nome;
+            document.getElementById('userEmail').value = email;
+            document.getElementById('userTipo').value = tipo;
+            // Exibe o modal
+            document.getElementById('myModal').style.display = 'block';
         }
 
         function closeModal() {
+            // Fecha o modal
             document.getElementById('myModal').style.display = 'none';
         }
 
         function updateUser() {
-            const id = document.getElementById('userId').value;
+            const userId = document.getElementById('userId').value;
             const nome = document.getElementById('userNome').value;
             const email = document.getElementById('userEmail').value;
             const tipo = document.getElementById('userTipo').value;
 
-            fetch(`/atualizarusuario`, {
+            const data = {
+                id: userId,
+                nome: nome,
+                email: email,
+                tipo: tipo
+            };
+
+            fetch(`http://localhost:8080/atualizarusuario`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json',
                 },
-                body: `id=${id}&nome=${nome}&email=${email}&tipo=${tipo}`
+                body: JSON.stringify(data),
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro na atualização do usuário');
-                    }
-                    return response.text();
+                .then(response => response.json())
+                .then(data => {
+                    alert('Usuário atualizado com sucesso!');
+                    fetchUsuarios(); // Atualiza a lista de usuários
+                    closeModal(); // Fecha o modal
                 })
-                .then(result => {
-                    console.log(result);
-                    closeModal();
-                    fetchUsuarios();
-                })
-                .catch(error => console.error('Erro ao atualizar usuário:', error));
+                .catch((error) => {
+                    document.getElementById('erroMessage').textContent = "Erro ao atualizar usuário.";
+                    console.error('Erro:', error);
+                });
         }
-        document.addEventListener('DOMContentLoaded', fetchUsuarios);
+
+        window.onload = function () {
+            fetchUsuarios();
+        };
     </script>
 </body>
 

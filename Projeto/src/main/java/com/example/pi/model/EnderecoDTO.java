@@ -2,6 +2,7 @@ package com.example.pi.model;
 
 public class EnderecoDTO {
 
+    private long id;
     private String bairro;
     private String cep;
     private String cidade;
@@ -73,5 +74,13 @@ public class EnderecoDTO {
 
     public void setUf(String uf) {
         this.uf = uf;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.pi.model.Cliente;
+import com.example.pi.model.ClienteUpdateDTO;
 import com.example.pi.model.Endereco;
 import com.example.pi.model.LoginRequest;
 import com.example.pi.repository.ClienteRepository;
@@ -155,6 +156,7 @@ public class ClienteController {
 
     @PostMapping("/cadastrar")
     public ResponseEntity<Map<String, String>> cadastrarCliente(@RequestBody Cliente cliente) {
+        System.out.println("Cliente recebido: " + cliente);
         Map<String, String> response = new HashMap<>();
 
         if (clienteRepository.findByEmail(cliente.getEmail()) != null) {
@@ -183,6 +185,17 @@ public class ClienteController {
     public ResponseEntity<Endereco> adicionarEndereco(@PathVariable Long clienteId, @RequestBody Endereco endereco) {
         Endereco enderecoSalvo = enderecoService.salvarEndereco(clienteId, endereco);
         return ResponseEntity.ok(enderecoSalvo);
+    }
+
+    @PutMapping("/alterar/{id}")
+    public ResponseEntity<Cliente> atualizarCliente(@PathVariable Long id, @RequestBody ClienteUpdateDTO clienteUpdateDTO) {
+        Cliente clienteAtualizado = clienteService.atualizarCliente(id, clienteUpdateDTO);
+
+        if (clienteAtualizado != null) {
+            return ResponseEntity.ok(clienteAtualizado);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);  // Caso o cliente não exista
+        }
     }
 
 }

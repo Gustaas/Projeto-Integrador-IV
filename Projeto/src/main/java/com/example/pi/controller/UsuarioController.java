@@ -81,7 +81,6 @@ public class UsuarioController {
         return "buscarUsuarios";
     }
 
-
     @PostMapping("/cadastrar")
     public String cadastrarUsuario(
             @RequestParam("nome") String nome,
@@ -91,12 +90,16 @@ public class UsuarioController {
             @RequestParam("ConfirmPassword") String confirmSenha,
             Model model) {
 
+        System.out.println("Recebendo dados: nome=" + nome + ", cpf=" + cpf + ", email=" + email);
+
         if (!usuarioService.validarCPF(cpf)) {
+            System.out.println("CPF inválido: " + cpf);
             model.addAttribute("erro", "CPF inválido.");
             return "buscarUsuarios";
         }
 
         if (!senha.equals(confirmSenha)) {
+            System.out.println("Senhas não coincidem: senha=" + senha + ", confirmSenha=" + confirmSenha);
             model.addAttribute("erro", "As senhas não coincidem.");
             return "buscarUsuarios";
         }
@@ -106,6 +109,8 @@ public class UsuarioController {
         usuario.setCpf(cpf);
         usuario.setEmail(email);
         usuario.setSenha(new BCryptPasswordEncoder().encode(senha));
+
+        System.out.println("Salvando usuário: " + usuario);
 
         String mensagem = usuarioService.salvarUsuario(usuario);
         model.addAttribute("mensagem", mensagem);

@@ -8,6 +8,7 @@ public class CompraDTO {
     private Long idCompra;
     private Long idCliente;
     private Long idEndereco;
+    private EnderecoDTO endereco;
     private String formaPagamento;
     private String tipoFrete;
     private BigDecimal valorTotal;
@@ -16,8 +17,17 @@ public class CompraDTO {
     private BigDecimal valorParcelas;
     private String status;
     private List<CompraItemDTO> itens;
+    private String dataPedido;
 
     // Getters e Setters
+    public String getDataPedido() {
+        return dataPedido;
+    }
+
+    public void setDataPedido(String dataPedido) {
+        this.dataPedido = dataPedido;
+    }
+
     public Long getIdCompra() {
         return idCompra;
     }
@@ -104,6 +114,14 @@ public class CompraDTO {
 
     public void setValorParcelas(BigDecimal valorParcelas) {
         this.valorParcelas = valorParcelas;
+    }
+
+    public EnderecoDTO getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(EnderecoDTO endereco) {
+        this.endereco = endereco;
     }
 
 }

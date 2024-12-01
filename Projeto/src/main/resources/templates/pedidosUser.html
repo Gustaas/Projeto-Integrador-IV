@@ -35,11 +35,7 @@
                             <th>Data</th>
                             <th>Valor Total</th>
                             <th>Status</th>
-                            <th>Forma de Pagamento</th>
-                            <th>Tipo de Frete</th>
-                            <th>Parcelas</th>
-                            <th>Valor das Parcelas</th>
-                            <th>Itens</th>
+                            <th>Detalhes</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,6 +43,36 @@
                 </table>
             </div>
         </section>
+    </div>
+
+    <div class="modal fade" id="detalhesModal" tabindex="-1" role="dialog" aria-labelledby="detalhesModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detalhesModalLabel">Detalhes da Compra</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Número do Pedido:</strong> <span id="modalNumeroPedido"></span></p>
+                    <p><strong>Data do Pedido:</strong> <span id="modalDataPedido"></span></p>
+                    <p><strong>Valor Total:</strong> <span id="modalValorTotal"></span></p>
+                    <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                    <p><strong>Forma de Pagamento:</strong> <span id="modalFormaPagamento"></span></p>
+                    <p><strong>Tipo de Frete:</strong> <span id="modalTipoFrete"></span></p>
+                    <p><strong>Parcelas:</strong> <span id="modalParcelas"></span></p>
+                    <p><strong>Valor das Parcelas:</strong> <span id="modalValorParcelas"></span></p>
+
+                    <h5>Itens da Compra</h5>
+                    <ul id="modalItens"></ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -71,73 +97,142 @@
                     comprasTableBody.innerHTML = '';
 
                     const comprasPromises = compras.map(compra => {
-                        const dataPedido = new Date(compra.dataPedido).toLocaleDateString('pt-BR');
+                        const dataPedido = formatDate(compra.dataPedido);
 
-                        const itensHtml = compra.itens.map(item => {
-                            if (item.idProduto) {
-                                return fetch(`/produtos/${item.idProduto}`)
-                                    .then(response => response.json())
-                                    .then(produtoDetalhes => {
-                                        console.log('Resposta da API de produto:', produtoDetalhes);
+                        // Armazenar as compras no sessionStorage
+                        sessionStorage.setItem(`compra_${compra.numeroPedido}`, JSON.stringify(compra));
 
-                                        if (!produtoDetalhes || !produtoDetalhes.imagens || produtoDetalhes.imagens.length === 0) {
-                                            console.warn(`Produto com ID ${item.idProduto} sem imagens ou dados incompletos`);
-                                            return '';
-                                        }
-
-                                        const imagemPrincipal = produtoDetalhes.imagens.find(img => img.principal);
-                                        const imageSrc = imagemPrincipal ? `../img/${imagemPrincipal.link}` : '../img/default-image.png';
-
-                                        // Corrigido para acessar nomeProduto
-                                        const nomeProduto = produtoDetalhes.nomeProduto || "Produto não encontrado";
-
-                                        return `
-                                    <li>
-                                        <img src="${imageSrc}" alt="Imagem do produto" class="item-image" />
-                                        <p>Produto: ${nomeProduto}</p>
-                                        <p>Quantidade: ${item.quantidade}</p>
-                                    </li>
-                                `;
-                                    })
-                                    .catch(error => {
-                                        console.error('Erro ao buscar produto:', error);
-                                        return '';
-                                    });
-                            } else {
-                                console.warn("Produto não encontrado ou dados incompletos para o item", item);
-                                return '';
-                            }
-                        });
-
-                        return Promise.all(itensHtml).then(itens => {
-                            return `
-                        <tr>
-                            <td>${compra.numeroPedido}</td>
-                            <td>${dataPedido}</td>
-                            <td>R$ ${compra.valorTotal.toFixed(2)}</td>
-                            <td>${compra.status}</td>
-                            <td>${compra.formaPagamento}</td>
-                            <td>R$ ${compra.tipoFrete}</td>
-                            <td>${compra.parcelas}</td>
-                            <td>R$ ${compra.valorParcelas.toFixed(2)}</td>
-                            <td><ul>${itens.join('')}</ul></td>
-                        </tr>
-                    `;
-                        });
+                        return `
+                    <tr>
+                        <td>${compra.numeroPedido}</td>
+                        <td>${dataPedido}</td>
+                        <td>R$ ${compra.valorTotal.toFixed(2)}</td>
+                        <td>${compra.status}</td>
+                        <td><button class="btn btn-info" data-toggle="modal" data-target="#detalhesModal" onclick="loadPurchaseDetails(${compra.numeroPedido})">Detalhes</button></td>
+                    </tr>
+                `;
                     });
 
-                    Promise.all(comprasPromises)
-                        .then(comprasHtml => {
-                            comprasTableBody.innerHTML = comprasHtml.join('');
-                        })
-                        .catch(error => {
-                            console.error('Erro ao processar as compras:', error);
-                        });
+                    comprasTableBody.innerHTML = comprasPromises.join('');
                 })
                 .catch(error => {
                     console.error('Erro ao carregar as compras:', error);
                 });
         }
+
+
+
+        function loadPurchaseDetails(numeroPedido) {
+            // Recuperar os dados da compra do sessionStorage
+            const compra = JSON.parse(sessionStorage.getItem(`compra_${numeroPedido}`));
+
+            if (!compra) {
+                console.error('Compra não encontrada para o número do pedido:', numeroPedido);
+                return;
+            }
+
+            // Preencher os campos do modal com os dados da compra
+            document.getElementById('modalNumeroPedido').textContent = compra.numeroPedido;
+
+            // Tratar a data com hora no formato correto
+            const dataPedido = formatDate(compra.dataPedido);
+            document.getElementById('modalDataPedido').textContent = dataPedido;
+
+            document.getElementById('modalValorTotal').textContent = `R$ ${compra.valorTotal.toFixed(2)}`;
+            document.getElementById('modalStatus').textContent = compra.status;
+            document.getElementById('modalFormaPagamento').textContent = compra.formaPagamento;
+            document.getElementById('modalTipoFrete').textContent = `R$ ${compra.tipoFrete}`;
+            document.getElementById('modalParcelas').textContent = compra.parcelas;
+            document.getElementById('modalValorParcelas').textContent = `R$ ${compra.valorParcelas.toFixed(2)}`;
+
+            // Carregar os itens da compra
+            const itensHtml = compra.itens.map(item => {
+                if (item.idProduto) {
+                    return fetch(`/produtos/${item.idProduto}`)
+                        .then(response => response.json())
+                        .then(produtoDetalhes => {
+                            console.log('Resposta da API de produto:', produtoDetalhes);
+
+                            if (!produtoDetalhes || !produtoDetalhes.imagens || produtoDetalhes.imagens.length === 0) {
+                                console.warn(`Produto com ID ${item.idProduto} sem imagens ou dados incompletos`);
+                                return ''; // Caso não tenha imagem, retorna vazio
+                            }
+
+                            const imagemPrincipal = produtoDetalhes.imagens.find(img => img.principal);
+                            const imageSrc = imagemPrincipal ? `../img/${imagemPrincipal.link}` : '../img/default-image.png';
+
+                            // Corrigido para acessar nomeProduto
+                            const nomeProduto = produtoDetalhes.nomeProduto || "Produto não encontrado";
+
+                            return `
+                        <li>
+                            <img src="${imageSrc}" alt="Imagem do produto" class="item-image" />
+                            <p>Produto: ${nomeProduto}</p>
+                            <p>Quantidade: ${item.quantidade}</p>
+                        </li>
+                    `;
+                        })
+                        .catch(error => {
+                            console.error('Erro ao buscar produto:', error);
+                            return ''; // Caso ocorra erro, retorna vazio
+                        });
+                } else {
+                    console.warn("Produto não encontrado ou dados incompletos para o item", item);
+                    return ''; // Caso não tenha idProduto, retorna vazio
+                }
+            });
+
+            // Aguardar todos os itens serem carregados e preencher o modal
+            Promise.all(itensHtml)
+                .then(itens => {
+                    document.getElementById('modalItens').innerHTML = itens.join('');
+                })
+                .catch(error => {
+                    console.error('Erro ao processar os itens da compra:', error);
+                });
+        }
+
+
+        // Aguardar todos os itens serem carregados e preencher o modal
+        Promise.all(itensHtml)
+            .then(itens => {
+                document.getElementById('modalItens').innerHTML = itens.join('');
+            })
+            .catch(error => {
+                console.error('Erro ao processar os itens da compra:', error);
+            });
+
+        function formatDate(dateString) {
+            // Dividir a data e a hora
+            const [datePart, timePart] = dateString.split(' ');
+
+            // Dividir a data em dia, mês e ano
+            const [day, month, year] = datePart.split('/');
+
+            // Criar uma nova string de data no formato ISO (YYYY-MM-DDTHH:mm:ss)
+            const formattedDate = `${year}-${month}-${day}T${timePart}`;
+
+            // Criar o objeto Date
+            const date = new Date(formattedDate);
+
+            if (isNaN(date)) {
+                return 'Data inválida';
+            }
+
+            // Formatar a data para incluir hora, minuto e segundo
+            const formattedDateString = date.toLocaleString('pt-BR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            });
+
+            return formattedDateString;
+        }
+
+
 
 
 
